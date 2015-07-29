@@ -1,0 +1,26 @@
+<html>
+<body>
+	<form method="POST" enctype="multipart/form-data"
+		action="/custom/uploadpic">
+		File to upload: <input type="file" name="file"><br /> customer_id: <input
+			type="text" name="yybId"><br /> <br /> <input type="submit"
+			value="Upload"> Press here to upload the file!
+	</form>
+	司机注册
+	<br>http://localhost:8080/driver/register?yybPhone=12345&&yybPassword=12345&&yybDrivername=1</br>
+	司机登录
+	<br>localhost:8080/driver/login?phone=12345&&password=12345</br>
+	用户注册
+	<br>localhost:8080/custom/register?yybPhone=12345&&yybPassword=12345&&yybUsername=2</br>
+	用户登录
+	<br>localhost:8080/custom/login?phone=12345&&password=12345</br>
+	用户图像
+	<br>http://localhost:8080/custom/uploadpic?yybId=1&&file=xxxxxx</br>
+	司机图像
+	<br>http://localhost:8080/driver/uploadpic?yybId=1&&file=xxxxxx</br>
+	驾驶证图像
+	<br>http://localhost:8080/driver/uploadcarlicence?yybId=1&&file=xxxxxx</br>
+	营业证图像	
+	<br>http://localhost:8080/driver/uploadlicence?yybId=1&&file=xxxxxx</br>
+</body>
+</html>
