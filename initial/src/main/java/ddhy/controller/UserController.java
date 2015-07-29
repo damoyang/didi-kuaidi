@@ -11,12 +11,19 @@ import org.springframework.web.multipart.MultipartFile;
 import ddhy.model.Result;
 import ddhy.model.YybDriverAccount;
 import ddhy.model.YybUserAccount;
+import ddhy.service.CustomerRepository;
+import ddhy.service.DriverRepository;
 import ddhy.service.UserServiceIntf;
 
 @RestController
 public class UserController {
 	@Autowired
 	UserServiceIntf userServiceIntf;
+	@Autowired 
+	DriverRepository driverRepository;
+	@Autowired
+	CustomerRepository customerRepository;
+	
 
 	@RequestMapping("/greeting")
 	public String greeting(
@@ -75,6 +82,9 @@ public class UserController {
 		Result result=new Result();
 		if (!file.isEmpty()) {
 			genefile(name, file);
+			YybUserAccount userAccount=customerRepository.findOne(customer.getYybId());
+			userAccount.setYybUserphoto(name);
+			customerRepository.save(userAccount);
 			result.setData(name);
 		} else {
 			result.setSuccess(false);
@@ -89,7 +99,11 @@ public class UserController {
 		Result result=new Result();
 		if (!file.isEmpty()) {
 			genefile(name, file);
+			YybDriverAccount driverAccount=driverRepository.findOne(driver.getYybId());
+			driverAccount.setYybDriverphoto(name);
+			driverRepository.save(driverAccount);
 			result.setData(name);
+			
 		} else {
 			result.setSuccess(false);
 		}
@@ -103,6 +117,9 @@ public class UserController {
 		Result result=new Result();
 		if (!file.isEmpty()) {
 			genefile(name, file);
+			YybDriverAccount driverAccount=driverRepository.findOne(driver.getYybId());
+			driverAccount.setYybDrivinglicence(name);
+			driverRepository.save(driverAccount);
 			result.setData(name);
 
 		} else {
@@ -118,6 +135,9 @@ public class UserController {
 		Result result=new Result();
 		if (!file.isEmpty()) {
 			genefile(name, file);
+			YybDriverAccount driverAccount=driverRepository.findOne(driver.getYybId());
+			driverAccount.setYybDrivinglicence(name);
+			driverRepository.save(driverAccount);
 			result.setData(name);
 
 		} else {
@@ -125,6 +145,7 @@ public class UserController {
 		}
 		return result;
 	}
+	
 	void genefile(String name,MultipartFile file){
 		try {
 			byte[] bytes = file.getBytes();

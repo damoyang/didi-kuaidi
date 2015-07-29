@@ -11,7 +11,7 @@ import ddhy.model.*;
  * @author 灏�缈�
  * @version 1.0.0
  */
-public interface CustomerRepository extends JpaRepository<YybUserAccount,Long>{
+public interface CustomerRepository extends JpaRepository<YybUserAccount,Integer>{
 	@Query("select c from YybUserAccount c where c.yybPhone=?1")
 	public YybUserAccount findByName(String name);
 	
