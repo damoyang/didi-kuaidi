@@ -83,8 +83,20 @@ public class YybUserAccount implements Serializable {
 
 	@Column(name="yyb_usertype")
 	private String yybUsertype;
+	
+	@Column(name="yyb_baiduid")
+	private String yybBaiduid;
+	
 
-    public YybUserAccount() {
+    public String getYybBaiduid() {
+		return yybBaiduid;
+	}
+
+	public void setYybBaiduid(String yybBaiduid) {
+		this.yybBaiduid = yybBaiduid;
+	}
+
+	public YybUserAccount() {
     }
 
 	public int getYybId() {

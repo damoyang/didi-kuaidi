@@ -79,6 +79,17 @@ public class YybDriverAccount implements Serializable {
 
 	@Column(name="yyb_token")
 	private String yybToken;
+	
+	public String getYybBaiduid() {
+		return yybBaiduid;
+	}
+
+	public void setYybBaiduid(String yybBaiduid) {
+		this.yybBaiduid = yybBaiduid;
+	}
+
+	@Column(name="yyb_baiduid")
+	private String yybBaiduid;
 
     public YybDriverAccount() {
     }

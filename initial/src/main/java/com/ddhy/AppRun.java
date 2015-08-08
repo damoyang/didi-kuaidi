@@ -13,6 +13,7 @@ import org.springframework.jms.config.SimpleJmsListenerContainerFactory;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.ddhy.activemq.Sender;
+import com.ddhy.service.BaiduMapService;
 @SpringBootApplication
 public class AppRun extends SpringBootServletInitializer{
 	static ConfigurableApplicationContext context;
@@ -29,10 +30,11 @@ public class AppRun extends SpringBootServletInitializer{
 	public static void main(String[] args) {
         context=SpringApplication.run(AppRun.class, args);
         Sender sender=new Sender();
-        sender.send();
+        BaiduMapService baiduMapService=new BaiduMapService();
+        baiduMapService.getTest();
+        sender.send("1");
     }
 	public static ConfigurableApplicationContext getContext() {
-		// TODO Auto-generated method stub
 		return context;
 	}
 }

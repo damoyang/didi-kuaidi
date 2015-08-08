@@ -27,10 +27,10 @@ public class YybDriverPostion implements Serializable {
 	private Timestamp yybLastmodifytime;
 
 	@Column(name="yyb_lat")
-	private BigDecimal yybLat;
+	private Double yybLat;
 
 	@Column(name="yyb_long")
-	private BigDecimal yybLong;
+	private Double yybLong;
 
     public YybDriverPostion() {
     }
@@ -59,19 +59,19 @@ public class YybDriverPostion implements Serializable {
 		this.yybLastmodifytime = yybLastmodifytime;
 	}
 
-	public BigDecimal getYybLat() {
-		return this.yybLat;
+	public Double getYybLat() {
+		return yybLat;
 	}
 
-	public void setYybLat(BigDecimal yybLat) {
+	public void setYybLat(Double yybLat) {
 		this.yybLat = yybLat;
 	}
 
-	public BigDecimal getYybLong() {
-		return this.yybLong;
+	public Double getYybLong() {
+		return yybLong;
 	}
 
-	public void setYybLong(BigDecimal yybLong) {
+	public void setYybLong(Double yybLong) {
 		this.yybLong = yybLong;
 	}
 
