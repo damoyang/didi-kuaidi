@@ -1,4 +1,4 @@
-package com.ddhy.service;
+package com.ddhy.repository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

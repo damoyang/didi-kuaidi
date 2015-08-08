@@ -10,15 +10,14 @@ import org.springframework.jms.core.MessageCreator;
 import com.ddhy.AppRun;
 
 public class Sender {
-	public void send() {
+	public void send(String target) {
 		MessageCreator messageCreator = new MessageCreator() {
 			@Override
 			public Message createMessage(Session session) throws JMSException {
-				return session.createTextMessage("ping!");
+				return session.createTextMessage("test");
 			}
 		};
 		JmsTemplate jmsTemplate = AppRun.getContext().getBean(JmsTemplate.class);
-		System.out.println("Sending a new message.");
-		jmsTemplate.send("mailbox-destination", messageCreator);
+		jmsTemplate.send(target, messageCreator);
 	}
 }

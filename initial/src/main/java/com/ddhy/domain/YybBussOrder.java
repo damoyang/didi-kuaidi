@@ -2,6 +2,11 @@ package com.ddhy.domain;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.ddhy.util.UUIDGenerator;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -75,6 +80,7 @@ public class YybBussOrder implements Serializable {
 
     @Temporal( TemporalType.TIMESTAMP)
 	@Column(name="yyb_judgetime")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date yybJudgetime;
 
 	@Column(name="yyb_mileage")
@@ -82,7 +88,7 @@ public class YybBussOrder implements Serializable {
 
 	@Column(name="yyb_orderno")
 	private String yybOrderno;
-
+  
 	@Column(name="yyb_orderstatus")
 	private String yybOrderstatus;
 
@@ -421,6 +427,11 @@ public class YybBussOrder implements Serializable {
 
 	public void setYybUsername(String yybUsername) {
 		this.yybUsername = yybUsername;
+	}
+	public void init(){
+		yybOrderstatus="未支付";
+		yybOrdertime=new Date();
+		yybOrderno=UUIDGenerator.getDingDanBH();
 	}
 
 }

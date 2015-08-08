@@ -41,6 +41,10 @@ public class YybBussTraderecord implements Serializable {
     public YybBussTraderecord() {
     }
 
+    public YybBussTraderecord(String yybOrdernum,String type){
+    	this.yybTradetype=type;
+    	this.yybOrdernum=yybOrdernum;
+    }
 	public int getYybId() {
 		return this.yybId;
 	}
@@ -95,6 +99,10 @@ public class YybBussTraderecord implements Serializable {
 
 	public void setYybTradetype(String yybTradetype) {
 		this.yybTradetype = yybTradetype;
+	}
+
+	public void init() {
+		this.yybTradetime=new Timestamp(System.currentTimeMillis());
 	}
 
 }

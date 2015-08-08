@@ -7,8 +7,7 @@ import java.util.*;
 
 import com.ddhy.domain.Result;
 import com.ddhy.domain.YybSysBasicinfo;
-import com.ddhy.service.SysBasicinfoRepository;
-
+import com.ddhy.repository.*;
 @RestController
 public class SystemInfoController {
 	String spliter=",";

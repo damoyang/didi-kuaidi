@@ -1,8 +1,9 @@
-package com.ddhy.service;
+package com.ddhy.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.*;
 import com.ddhy.domain.*;
 
 
@@ -12,8 +13,8 @@ import com.ddhy.domain.*;
  * @author 灏�缈�
  * @version 1.0.0
  */
-public interface CustomerRepository extends JpaRepository<YybUserAccount,Integer>{
-	@Query("select c from YybUserAccount c where c.yybPhone=?1")
-	public YybUserAccount findByName(String name);
+public interface OrderRepository extends JpaRepository<YybBussOrder,Integer>{
+	@Query("select o from YybBussOrder o where yybOrderno=?1")
+	YybBussOrder findByOrderNo(String orderNo);
 	
 }

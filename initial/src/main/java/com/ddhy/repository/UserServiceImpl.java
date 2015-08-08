@@ -1,10 +1,9 @@
-package com.ddhy.service;
+package com.ddhy.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ddhy.domain.*;
-import com.ddhy.repository.*;
 import com.ddhy.service.*;
 
 @Service

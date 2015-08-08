@@ -1,25 +1,17 @@
 package com.ddhy.web;
 
 import java.io.*;
-
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.ddhy.domain.Result;
 import com.ddhy.domain.YybDriverAccount;
 import com.ddhy.domain.YybDriverCar;
 import com.ddhy.domain.YybDriverPaper;
 import com.ddhy.domain.YybUserAccount;
 import com.ddhy.domain.YybUserBank;
-import com.ddhy.service.CustomerBankRepository;
-import com.ddhy.service.CustomerRepository;
-import com.ddhy.service.DriverCarRepository;
-import com.ddhy.service.DriverPaperRepository;
-import com.ddhy.service.DriverRepository;
 import com.ddhy.service.UserServiceIntf;
+import com.ddhy.repository.*;
 
 
 @RestController
