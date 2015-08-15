@@ -48,7 +48,6 @@ public class UserController {
 		String check=sBuilder.toString();
 		String msg="您的验证码为："+check;
 		smsService.sendOnce(phone,msg);
-		result.setData(check);
 		session.setAttribute("check", check);
 		return result;
 	}
