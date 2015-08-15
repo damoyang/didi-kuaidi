@@ -37,7 +37,7 @@ public class UUIDGenerator {
 		Integer rand = random.nextInt(500);
 		return String.format("JY_%d_%s_%d", uid, dateString, rand);
 	}
-	public static void main(String[] args) {
+	public static void tt(String[] args) {
 		String str = getDingDanBH();
 		System.out.println(str);
 	}

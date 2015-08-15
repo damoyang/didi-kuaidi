@@ -9,6 +9,7 @@ import com.ddhy.util.UUIDGenerator;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Random;
 
 
 /**
@@ -27,6 +28,7 @@ public class YybBussOrder implements Serializable {
 
     @Temporal( TemporalType.DATE)
 	@Column(name="yyb_arrivetime")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date yybArrivetime;
 
 	@Column(name="yyb_calcmoney")
@@ -52,6 +54,7 @@ public class YybBussOrder implements Serializable {
 
     @Temporal( TemporalType.TIMESTAMP)
 	@Column(name="yyb_endtime")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date yybEndtime;
 
 	@Column(name="yyb_goodsaddress")
@@ -104,6 +107,7 @@ public class YybBussOrder implements Serializable {
 
     @Temporal( TemporalType.TIMESTAMP)
 	@Column(name="yyb_paytime")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date yybPaytime;
 
 	@Column(name="yyb_realmoney")
@@ -111,10 +115,12 @@ public class YybBussOrder implements Serializable {
 
     @Temporal( TemporalType.TIMESTAMP)
 	@Column(name="yyb_realstarttime")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date yybRealstarttime;
 
     @Temporal( TemporalType.TIMESTAMP)
 	@Column(name="yyb_starttime")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date yybStarttime;
 
 	@Column(name="yyb_targetaddress")
@@ -429,9 +435,11 @@ public class YybBussOrder implements Serializable {
 		this.yybUsername = yybUsername;
 	}
 	public void init(){
-		yybOrderstatus="未支付";
+		yybOrderstatus="未确认";
 		yybOrdertime=new Date();
 		yybOrderno=UUIDGenerator.getDingDanBH();
+		Random random=new Random();
+		yybCalcmoney=new BigDecimal(random.nextInt(500)+500);
 	}
 
 }

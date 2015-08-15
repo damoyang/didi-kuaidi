@@ -46,7 +46,8 @@ public class UserServiceImpl implements UserServiceIntf {
 
 	@Override
 	public YybDriverAccount drvRegister(YybDriverAccount drv) {
-
+		if(drv.getYybPhone()==null||drv.getYybPassword()==null) return null;
+		if(driverDaoIntf.findByName(drv.getYybPhone())!=null) return null;
 		return driverDaoIntf.save(drv);
 	}
 

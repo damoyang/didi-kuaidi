@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 
-import com.ddhy.domain.Result;
+import com.ddhy.domain.YybResult;
 import com.ddhy.domain.YybSysBasicinfo;
 import com.ddhy.repository.*;
 @RestController
@@ -15,8 +15,8 @@ public class SystemInfoController {
 	@Autowired
 	SysBasicinfoRepository sysBasicinfoRepository;
 	@RequestMapping("/sysinfo/add")
-	Result addSysInfo(String resname,String resvalue){
-		Result result=new Result();
+	YybResult addSysInfo(String resname,String resvalue){
+		YybResult result=new YybResult();
 		String[] values=resvalue.split(spliter);
 		List<YybSysBasicinfo> resources=sysBasicinfoRepository.findByName(resname);
 		YybSysBasicinfo resource;
@@ -25,7 +25,8 @@ public class SystemInfoController {
 			resource.setYybResname(resname);
 			resource.setYybResvalue("");
 		}else if (resources.size()>1) {
-			result.setErrMsg("database error!duplicate name");
+			result.setErrMsg("数据库错误|多条重复记录");
+			result.setStatus(3);
 			return result;
 		}else{
 			resource=resources.get(0);
@@ -46,15 +47,17 @@ public class SystemInfoController {
 		return result;
 	}
 	@RequestMapping("/sysinfo/search")
-	Result searchResourceName(String resname){
-		Result result=new Result();
+	YybResult searchResourceName(String resname){
+		YybResult result=new YybResult();
 		List<YybSysBasicinfo> resources=sysBasicinfoRepository.findByName(resname);
 		YybSysBasicinfo resource;
 		if(resources==null){
-			result.setErrMsg("no item find");
+			result.setErrMsg("没有数据");
+			result.setStatus(1);
 			return result;
 		}else if (resources.size()>1) {
-			result.setErrMsg("database error!duplicate name");
+			result.setErrMsg("数据库错误|多条重复记录");
+			result.setStatus(3);
 			return result;
 		}else{
 			resource=resources.get(0);
@@ -69,8 +72,8 @@ public class SystemInfoController {
 		return result;
 	}
 	@RequestMapping("/sysinfo/update")
-	Result updateResourceName(YybSysBasicinfo yybSysBasicinfo){
-		Result result=new Result();
+	YybResult updateResourceName(YybSysBasicinfo yybSysBasicinfo){
+		YybResult result=new YybResult();
 		String[] values=yybSysBasicinfo.getYybResvalue().split(spliter);
 		StringBuilder tmp=new StringBuilder();
 		for(String value:values){

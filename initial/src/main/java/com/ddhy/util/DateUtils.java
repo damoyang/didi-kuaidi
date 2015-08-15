@@ -231,7 +231,7 @@ public class DateUtils {
 		return format.format(date);
 	}
 	
-	public static void main(String[] arags) {
+	public static void tt(String[] arags) {
 		// DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		// System.out.println(format.format(yyyyMMdd2Date("19820426")));
 		// System.out.println(yyyyMMddHHmmss(new Date()));

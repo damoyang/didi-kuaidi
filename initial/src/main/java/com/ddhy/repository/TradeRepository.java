@@ -14,7 +14,5 @@ import com.ddhy.domain.*;
  * @version 1.0.0
  */
 public interface TradeRepository extends JpaRepository<YybBussTraderecord,Integer>{
-	@Query("select b from YybUserBank b where yybUserId=?1")
-	List<YybUserBank> findByUserId(Integer id);
 	
 }

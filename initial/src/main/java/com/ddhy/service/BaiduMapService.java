@@ -63,18 +63,23 @@ public class BaiduMapService {
 	    String result = restTemplate.postForObject(url_updatePOI,map,String.class);
 	}
 	public String addPOI(double lat,double lng){
-		UriComponentsBuilder builder=UriComponentsBuilder.fromHttpUrl(url_addPOI)
-				.queryParam("ak", ak)
-				.queryParam("geotable_id", geotable_id)
-				.queryParam("latitude", lat)
-				.queryParam("longitude", lng)
-				.queryParam("coord_type", coord_type);
-		String baiduResult=restTemplate.getForObject(builder.build().encode().toUri(), String.class);
+//		UriComponentsBuilder builder=UriComponentsBuilder.fromHttpUrl(url_addPOI)
+//				.queryParam("ak", ak)
+//				.queryParam("geotable_id", geotable_id)
+//				.queryParam("latitude", lat)
+//				.queryParam("longitude", lng)
+//				.queryParam("coord_type", coord_type);
+		MultiValueMap<String, Object> map=new LinkedMultiValueMap<>();
+		map.add("ak", ak);
+		map.add("geotable_id", geotable_id);
+		map.add("latitude", lat);
+		map.add("longitude", lng);
+		map.add("coord_type", coord_type);
+		String baiduResult=restTemplate.postForObject(url_addPOI,map,String.class);
 		ObjectMapper objectMapper=new ObjectMapper();
 		try {
-			Map<String, Object> map=objectMapper.readValue(baiduResult, Map.class);
-			map=(Map) map.get("poi");
-			return (String)map.get("id");
+			Map<String, Object> re=objectMapper.readValue(baiduResult, Map.class);
+			return String.valueOf(re.get("id"));
 		} catch (JsonParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -92,3 +97,4 @@ public class BaiduMapService {
 	}
 	
 }
+

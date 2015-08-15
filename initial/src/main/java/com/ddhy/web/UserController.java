@@ -4,18 +4,16 @@ import java.io.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.ddhy.domain.Result;
-import com.ddhy.domain.YybDriverAccount;
-import com.ddhy.domain.YybDriverCar;
-import com.ddhy.domain.YybDriverPaper;
-import com.ddhy.domain.YybUserAccount;
-import com.ddhy.domain.YybUserBank;
-import com.ddhy.service.UserServiceIntf;
+import java.util.*;
+import com.ddhy.domain.*;
+import com.ddhy.service.*;
+import com.ddhy.util.*;
 import com.ddhy.repository.*;
-
-
+import com.wordnik.swagger.annotations.*;
+@Api(description = "Operations with Landlords", produces = "application/json", value = "user")
 @RestController
 public class UserController {
+	private static Map<String, String> checkMap=new HashMap<String, String>();
 	@Autowired
 	UserServiceIntf userServiceIntf;
 	@Autowired 
@@ -28,93 +26,163 @@ public class UserController {
 	CustomerBankRepository customerBankRepository;
 	@Autowired
 	DriverPaperRepository driverPaperRepository;
-
-	@RequestMapping("/greeting")
-	public String greeting(
-			@RequestParam(value = "name", defaultValue = "World") String name) {
-		return "hello";
+	@Autowired
+	SMSService smsService;
+	
+	@RequestMapping("/custom/checknum")
+	@ApiOperation(value = "Create new Landlord", notes = "Creates new Landlord")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Fields are with validation errors"),
+            @ApiResponse(code = 201, message = "") })
+	public YybResult getCheckNum(String phone){
+		YybResult result=new YybResult();
+		Random random=new Random();
+		int n=4;
+		StringBuilder sBuilder=new StringBuilder();
+		for(int i=0;i<n;i++){
+			sBuilder.append(random.nextInt(10));
+		}
+		String check=sBuilder.toString();
+		String msg="您的验证码为："+check;
+		smsService.sendOnce(phone,msg);
+		result.setData(check);
+		checkMap.put(phone, check);
+		return result;
 	}
 
 	@RequestMapping("/custom/login")
-	public Result cusLogin(String phone, String password) {
+	public YybResult cusLogin(String phone, String password) {
 		//
-		Result result = new Result();
+		YybResult result = new YybResult();
 		YybUserAccount customer = userServiceIntf.cusLogin(phone, password);
-		if (customer == null)
-			result.setSuccess(false);
+		if (customer == null){
+			result.setErrMsg("用户名密码不正确");
+			result.setStatus(1);
+			return result;
+		}
+		customer.setYybToken(UUIDGenerator.getUUID());
+		customerRepository.save(customer);
 		result.setData(customer);
 		return result;
 	}
 	@RequestMapping("/custom/logout")
-	public Result cusLogout(String yybId) {
-		Result result = new Result();
+	public YybResult cusLogout(Integer yybId) {
+		YybResult result = new YybResult();
+		YybUserAccount yybUserAccount=customerRepository.findOne(yybId);
+		if(yybUserAccount==null){
+			//TODO what
+		}else{
+			yybUserAccount.setYybToken(UUIDGenerator.getUUID());
+			customerRepository.save(yybUserAccount);
+		}
 		return result;
 	}
 	
 	@RequestMapping("/custom/addbank")
-	public Result addBank(YybUserBank yybUserBank){
-		Result result=new Result();
+	public YybResult addBank(YybUserBank yybUserBank){
+		YybResult result=new YybResult();
 		customerBankRepository.save(yybUserBank);
 		return result;
 	}
 	@RequestMapping("/custom/getbanks")
-	public Result getBanks(YybUserBank yybUserBank){
-		Result result=new Result();
-		customerBankRepository.findByUserId(yybUserBank.getYybUserid());
+	public YybResult getBanks(YybUserBank yybUserBank){
+		YybResult result=new YybResult();
+		List<YybUserBank> banks=customerBankRepository.findByUserId(yybUserBank.getYybUserid());
+		result.setData(banks);
 		return result;
 	}
 	@RequestMapping("/custom/deletebank")
-	public Result deleteBank(YybUserBank yybUserBank){
-		Result result=new Result();
+	public YybResult deleteBank(YybUserBank yybUserBank){
+		YybResult result=new YybResult();
 		customerBankRepository.delete(yybUserBank);
 		return result;
 	}
 	@RequestMapping("/driver/login")
-	public Result drvLogin(String phone, String password) {
+	public YybResult drvLogin(String phone, String password) {
 		//
-		Result result = new Result();
+		YybResult result = new YybResult();
 		YybDriverAccount driver = userServiceIntf.drvLogin(phone, password);
-		if (driver == null)
-			result.setSuccess(false);
-		result.setData(driver);
+		if (driver == null){
+			result.setErrMsg("用户名密码不正确");
+			result.setStatus(1);
+			return result;
+		}
+		driver.setYybToken(UUIDGenerator.getUUID());
+		driverRepository.save(driver);
+		List<YybDriverCar> cars=driverCarRepository.findByDriverId(driver.getYybId());
+		Map<String, Object> reMap=new HashMap<String, Object>();
+		reMap.put("cars",cars );
+		reMap.put("driver", driver);
+		result.setData(reMap);
 		return result;
 	}
 	@RequestMapping("/driver/logout")
-	public Result drvLogout(String yybId) {
-		Result result = new Result();
+	public YybResult drvLogout(Integer yybId) {
+		YybResult result = new YybResult();
+		YybDriverAccount driver=driverRepository.findOne(yybId);
+		if(driver==null){
+			//TODO 
+		}else{
+			driver.setYybToken(UUIDGenerator.getUUID());
+			driverRepository.save(driver);
+		}
 		return result;
 	}
 
 	@RequestMapping("/custom/register")
-	public Result cusRegister(YybUserAccount customer) {
+	public YybResult cusRegister(YybUserAccount customer,String check) {
+		YybResult result = new YybResult();
+		if(!checkMap.get(customer.getYybPhone()).equals(check)) {
+			result.setErrMsg("验证码不正确");
+			result.setStatus(1);
+			return result;
+		}
 		YybUserAccount cus = userServiceIntf.cusRegister(customer);
-		Result result = new Result();
-		if (cus == null)
-			result.setSuccess(false);
+		if (cus == null){
+			result.setErrMsg("手机号已注册");
+			result.setStatus(1);
+		}
 		result.setData(cus);
+		return result;
+	}
+	@RequestMapping("/driver/addinfo")
+	public YybResult drvInfo(YybDriverAccount driver) {
+		YybResult result = new YybResult();
+		YybDriverAccount drv = driverRepository.findOne(driver.getYybId());
+		if (drv == null){
+			result.setStatus(1);
+			return result;
+		}
+		
+		driverRepository.save(drv);
 		return result;
 	}
 
 	@RequestMapping("/driver/register")
-	public Result drvRegister(YybDriverAccount driver) {
-		Result result = new Result();
+	public YybResult drvRegister(YybDriverAccount driver) {
+		YybResult result = new YybResult();
 		YybDriverAccount drv = userServiceIntf.drvRegister(driver);
-		if (drv == null)
-			result.setSuccess(false);
+		if (drv == null){
+			result.setErrMsg("手机号已注册");
+			result.setStatus(1);
+			return result;
+		}
 		result.setData(drv);
 		return result;
 	}
 
 	@RequestMapping(value="/custom/uploadpic" ,method=RequestMethod.POST)
-	public Result uploadCustomerPic(YybUserAccount customer,
+	public YybResult uploadCustomerPic(YybUserAccount customer,
 			@RequestParam("file") MultipartFile file) {
-		String basedir="resources/cuspic/";
-		File file2=new File(basedir);
-		if(!file2.isDirectory()){
-			file2.mkdirs();
-		}
+//		String basedir="resources/cuspic/";
+		String basedir="";
+
+//		File file2=new File(basedir);
+//		if(!file2.isDirectory()){
+//			file2.mkdirs();
+//		}
 		String name=basedir+customer.getYybId()+"_"+file.getOriginalFilename(); 
-		Result result=new Result();
+		YybResult result=new YybResult();
 		if (!file.isEmpty()) {
 			name=genefile(name, file);
 			YybUserAccount userAccount=customerRepository.findOne(customer.getYybId());
@@ -122,16 +190,17 @@ public class UserController {
 			customerRepository.save(userAccount);
 			result.setData(name);
 		} else {
-			result.setSuccess(false);
+			result.setErrMsg("文件内容为空");
+			result.setStatus(2);
 		}
 		return result;
 	}
 
 	@RequestMapping(value="/driver/uploadpic",method=RequestMethod.POST)
-	public Result uploadDriverPic(YybDriverAccount driver,@RequestParam("file") MultipartFile file) {
+	public YybResult uploadDriverPic(YybDriverAccount driver,@RequestParam("file") MultipartFile file) {
 		String basedir="resources/drvpic/";
 		String name=basedir+driver.getYybId()+"_"+file.getOriginalFilename(); 
-		Result result=new Result();
+		YybResult result=new YybResult();
 		if (!file.isEmpty()) {
 			name=genefile(name, file);
 			YybDriverAccount driverAccount=driverRepository.findOne(driver.getYybId());
@@ -140,43 +209,46 @@ public class UserController {
 			result.setData(name);
 			
 		} else {
-			result.setSuccess(false);
+			result.setErrMsg("文件内容为空");
+			result.setStatus(2);
 		}
 		return result;
 	}
 
 	@RequestMapping(value="/driver/uploadlicence",method=RequestMethod.POST)
-	public Result uploadDriverLicencePic(YybDriverPaper paper,@RequestParam("file") MultipartFile file) {
+	public YybResult uploadDriverLicencePic(YybDriverPaper paper,@RequestParam("file") MultipartFile file) {
 		String basedir="resources/lcnpic/";
 		String name=basedir+paper.getYybDriverid()+"lic_"+file.getOriginalFilename(); 
-		Result result=new Result();
+		YybResult result=new YybResult();
 		if (!file.isEmpty()) {
 			name=genefile(name, file);
 			paper.setYybPaperurl(name);
 			driverPaperRepository.save(paper);
 			result.setData(name);
 		} else {
-			result.setSuccess(false);
+			result.setErrMsg("文件内容为空");
+			result.setStatus(2);
 		}
 		return result;
 	}
 
 	@RequestMapping("/driver/addcar")
-	Result driverAddCar(YybDriverCar yybDriverCar){
-		Result result=new Result();
+	YybResult driverAddCar(YybDriverCar yybDriverCar){
+		YybResult result=new YybResult();
 		YybDriverAccount driver=driverRepository.findOne(yybDriverCar.getYybDriverid());
 		if(driver==null){
 			result.setErrMsg("driverid is not valid");
+			result.setStatus(1);
 		}else{
 			driverCarRepository.save(yybDriverCar);
 		}
 		return result;
 	}
 	@RequestMapping(value="/driver/uploadcarpic",method=RequestMethod.POST)
-	public Result uploadDriverCarPic(YybDriverCar driveCar,@RequestParam("file") MultipartFile file) {
+	public YybResult uploadDriverCarPic(YybDriverCar driveCar,@RequestParam("file") MultipartFile file) {
 		String basedir="resources/carpic/";
 		String name=basedir+driveCar.getYybDriverid()+"_"+driveCar.getYybId()+file.getOriginalFilename(); 
-		Result result=new Result();
+		YybResult result=new YybResult();
 		if (!file.isEmpty()) {
 			name=genefile(name, file);
 			YybDriverCar car=driverCarRepository.findOne(driveCar.getYybId());
@@ -184,8 +256,8 @@ public class UserController {
 			driverCarRepository.save(car);
 			result.setData(name);
 		} else {
-			result.setSuccess(false);
-		}
+			result.setErrMsg("文件内容为空");
+			result.setStatus(2);		}
 		return result;
 	}
 	
@@ -198,7 +270,7 @@ public class UserController {
 					new FileOutputStream(file2));
 			stream.write(bytes);
 			stream.close();
-			return file2.getAbsolutePath();
+			return file2.getName();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "";

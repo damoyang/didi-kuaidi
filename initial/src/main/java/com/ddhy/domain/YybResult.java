@@ -1,7 +1,14 @@
 package com.ddhy.domain;
 
 
-public class Result {
+public class YybResult {
+	int status;
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
 	boolean success;
 	String msg;
 	String errMsg;
@@ -31,10 +38,10 @@ public class Result {
 	public void setData(Object data) {
 		this.data = data;
 	}
-	public Result(){
+	public YybResult(){
 		success=true;
 		msg="OK";
-		
+		status=0;
 	}
 
 }
