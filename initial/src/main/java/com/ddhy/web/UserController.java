@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
+
+import javax.servlet.http.HttpSession;
+
 import com.ddhy.domain.*;
 import com.ddhy.service.*;
 import com.ddhy.util.*;
@@ -34,7 +37,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Fields are with validation errors"),
             @ApiResponse(code = 201, message = "") })
-	public YybResult getCheckNum(String phone){
+	public YybResult getCheckNum(String phone,HttpSession session){
 		YybResult result=new YybResult();
 		Random random=new Random();
 		int n=4;
@@ -46,13 +49,13 @@ public class UserController {
 		String msg="您的验证码为："+check;
 		smsService.sendOnce(phone,msg);
 		result.setData(check);
-		checkMap.put(phone, check);
+		session.setAttribute("check", check);
 		return result;
 	}
 
 	@RequestMapping("/custom/login")
 	public YybResult cusLogin(String phone, String password) {
-		//
+
 		YybResult result = new YybResult();
 		YybUserAccount customer = userServiceIntf.cusLogin(phone, password);
 		if (customer == null){
@@ -130,9 +133,10 @@ public class UserController {
 	}
 
 	@RequestMapping("/custom/register")
-	public YybResult cusRegister(YybUserAccount customer,String check) {
+	public YybResult cusRegister(YybUserAccount customer,String check,HttpSession session) {
 		YybResult result = new YybResult();
-		if(!checkMap.get(customer.getYybPhone()).equals(check)) {
+		String sessionCheck=(String)session.getAttribute("check");
+		if(!sessionCheck.equals(check)) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
 			return result;
@@ -159,8 +163,14 @@ public class UserController {
 	}
 
 	@RequestMapping("/driver/register")
-	public YybResult drvRegister(YybDriverAccount driver) {
+	public YybResult drvRegister(YybDriverAccount driver,String check,HttpSession session) {
 		YybResult result = new YybResult();
+		String sessionCheck=(String)session.getAttribute("check");
+		if(!sessionCheck.equals(check)) {
+			result.setErrMsg("验证码不正确");
+			result.setStatus(1);
+			return result;
+		}
 		YybDriverAccount drv = userServiceIntf.drvRegister(driver);
 		if (drv == null){
 			result.setErrMsg("手机号已注册");
