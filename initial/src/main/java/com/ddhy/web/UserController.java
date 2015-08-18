@@ -135,7 +135,7 @@ public class UserController {
 	public YybResult cusRegister(YybUserAccount customer,String check,HttpSession session) {
 		YybResult result = new YybResult();
 		String sessionCheck=(String)session.getAttribute("check");
-		if(!sessionCheck.equals(check)) {
+		if(sessionCheck==null||!sessionCheck.equals(check)) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
 			return result;
@@ -160,16 +160,55 @@ public class UserController {
 		driverRepository.save(drv);
 		return result;
 	}
+	@RequestMapping("/driver/updatepswd")
+	public YybResult drvUpdatePassWord(String phone,String password,String check,HttpSession session){
+		YybResult result=new YybResult();
+		String sessionCheck=(String)session.getAttribute("check");
+		if(sessionCheck==null||!sessionCheck.equals(check)) {
+			result.setErrMsg("验证码不正确");
+			result.setStatus(1);
+			return result;
+		}
+		YybDriverAccount driverAccount=driverRepository.findByName(phone);
+		if(driverAccount==null){
+			result.setErrMsg("手机号没有注册");
+			result.setStatus(1);
+			return result;
+		}
+		driverAccount.setYybPassword(password);
+		driverRepository.save(driverAccount);
+		return result;
+	}
+	@RequestMapping("/custom/updatepswd")
+	public YybResult customUpdatePassWord(String phone,String password,String check,HttpSession session){
+		YybResult result=new YybResult();
+		String sessionCheck=(String)session.getAttribute("check");
+		if(sessionCheck==null||!sessionCheck.equals(check)) {
+			result.setErrMsg("验证码不正确");
+			result.setStatus(1);
+			return result;
+		}
+		YybUserAccount userAccount=customerRepository.findByName(phone);
+		if(userAccount==null){
+			result.setErrMsg("手机号没有注册");
+			result.setStatus(1);
+			return result;
+		}
+		userAccount.setYybPassword(password);
+		customerRepository.save(userAccount);
+		return result;
+	}
 
 	@RequestMapping("/driver/register")
 	public YybResult drvRegister(YybDriverAccount driver,String check,HttpSession session) {
 		YybResult result = new YybResult();
 		String sessionCheck=(String)session.getAttribute("check");
-		if(!sessionCheck.equals(check)) {
+		if(sessionCheck==null||!sessionCheck.equals(check)) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
 			return result;
 		}
+		driver.setYybDriverstatus("未审核");
 		YybDriverAccount drv = userServiceIntf.drvRegister(driver);
 		if (drv == null){
 			result.setErrMsg("手机号已注册");
