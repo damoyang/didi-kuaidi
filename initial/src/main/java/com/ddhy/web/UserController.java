@@ -18,6 +18,8 @@ import com.wordnik.swagger.annotations.*;
 public class UserController {
 	private static Map<String, String> checkMap=new HashMap<String, String>();
 	@Autowired
+	AuthService authService;
+	@Autowired
 	UserServiceIntf userServiceIntf;
 	@Autowired 
 	DriverRepository driverRepository;
@@ -49,6 +51,62 @@ public class UserController {
 		String msg="您的验证码为："+check;
 		smsService.sendOnce(phone,msg);
 		session.setAttribute("check", check);
+		return result;
+	}
+	@RequestMapping("/custom/updateinfo")
+	public YybResult updateUserInfo(YybUserAccount user){
+		YybResult result=new YybResult();
+		YybUserAccount trueUserAccount=customerRepository.findOne(user.getYybId());
+		if(trueUserAccount==null){
+			result.setErrMsg("无此用户");
+			result.setStatus(1);
+			return result;
+		}
+		if(user.getYybAddress()!=null){
+			trueUserAccount.setYybAddress(user.getYybAddress());
+		}
+		if(user.getYybCity()!=null){
+			trueUserAccount.setYybCity(user.getYybCity());
+		}
+		if(user.getYybCounty()!=null){
+			trueUserAccount.setYybCounty(user.getYybCounty());
+		}
+		if(user.getYybProvince()!=null){
+			trueUserAccount.setYybProvince(user.getYybProvince());
+		}
+		if(user.getYybSex()!=null){
+			trueUserAccount.setYybSex(user.getYybSex());
+		}
+		if(user.getYybUsername()!=null){
+			trueUserAccount.setYybUsername(user.getYybUsername());
+		}
+		if(user.getYybUsertype()!=null){
+			trueUserAccount.setYybUsertype(user.getYybUsertype());
+		}
+		customerRepository.save(trueUserAccount);
+		result.setData(trueUserAccount);
+		return result;
+	}
+	@RequestMapping("/driver/updateinfo")
+	public YybResult updateDriverInfo(YybDriverAccount driver){
+		YybResult result=new YybResult();
+		YybDriverAccount trueDriverAccount=driverRepository.findOne(driver.getYybId());
+		if(trueDriverAccount==null){
+			result.setErrMsg("无此用户");
+			result.setStatus(1);
+			return result;
+		}
+		if(driver.getYybDriverdesc()!=null){
+			trueDriverAccount.setYybDriverdesc(driver.getYybDriverdesc());
+		}
+		if(driver.getYybDrivername()!=null){
+			trueDriverAccount.setYybDrivername(driver.getYybDrivername());
+		}
+		if(driver.getYybOwncompany()!=null){
+			trueDriverAccount.setYybOwncompany(driver.getYybOwncompany());
+		}
+		driverRepository.save(trueDriverAccount);
+		result.setData(driver);
 		return result;
 	}
 
@@ -308,6 +366,19 @@ public class UserController {
 			result.setStatus(2);		}
 		return result;
 	}
+    @RequestMapping("/driver/auth")
+    YybResult driverAuth(String idCard,String name){
+    	YybResult result=new YybResult();
+    	boolean suc=authService.isValid(idCard, name);
+    	if(suc){
+    		return result; 
+    	}else{
+    		result.setErrMsg("姓名或身份证错误");
+    		result.setStatus(1);
+    		return result;
+    	}
+    	
+    }
 	
 	
 	String genefile(String name,MultipartFile file){

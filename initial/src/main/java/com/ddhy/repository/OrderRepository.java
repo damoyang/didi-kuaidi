@@ -18,5 +18,8 @@ public interface OrderRepository extends JpaRepository<YybBussOrder,Integer>{
 	YybBussOrder findByOrderNo(String orderNo);
 	@Query("select o from YybBussOrder o where yybOrderstatus=?1")
 	List<YybBussOrder> findByOrderStatus(String status);
-	
+	@Query("select o from YybBussOrder o where yybDriverid=?1")
+	List<YybBussOrder> findByDriverId(Integer id);
+	@Query("select o from YybBussOrder o where yybUserid=?1")
+	List<YybBussOrder> findByUserId(Integer id);
 }

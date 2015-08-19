@@ -99,6 +99,36 @@ public class BussinessController {
 		return result;
 	}
 	/**
+	 * 历史订单
+	 * current all 
+	 * 
+	 * 
+	 */
+	@RequestMapping("/busi/historyorderlist")
+	YybResult orderlistHis(Integer yybId){
+		YybResult result=new YybResult();
+		//TODO more choise
+		List<YybBussOrder> lists=orderRepository.findByDriverId(yybId);
+		//TODO more 
+		result.setData(lists);
+		return result;
+	}
+	/**
+	 * 我的订单
+	 * current all 
+	 * 
+	 * 
+	 */
+	@RequestMapping("/busi/customorderlist")
+	YybResult orderlistCus(Integer yybId){
+		YybResult result=new YybResult();
+		//TODO more choise
+		List<YybBussOrder> lists=orderRepository.findByUserId(yybId);
+		//TODO more 
+		result.setData(lists);
+		return result;
+	}
+	/**
 	 * 推送抢单
 	 * 
 	 * 
