@@ -1,11 +1,14 @@
 package com.ddhy.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ddhy.domain.*;
-import com.ddhy.repository.*;
-import com.ddhy.service.*;
+import com.ddhy.domain.YybDriverAccount;
+import com.ddhy.domain.YybUserAccount;
+import com.ddhy.repository.CustomerRepository;
+import com.ddhy.repository.DriverRepository;
 
 @Service
 public class UserServiceImpl implements UserServiceIntf {
@@ -67,6 +70,19 @@ public class UserServiceImpl implements UserServiceIntf {
 	public Boolean uploadCarLicencePic() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Boolean checkCusToken(String token, int userid) {
+		if(true)
+			return true; //TODO  待验证
+		// 根据token 和 userid 验证授权是否有效  modify by yuyajie 2015-8-20
+		List<YybUserAccount> userAccount = customerDaoIntf.checkToken(token);
+		if(userAccount == null || userAccount.size() > 1)
+		{
+			return false;
+		}
+		return true;
 	}
 
 }
