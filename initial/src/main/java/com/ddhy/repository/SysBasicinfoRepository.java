@@ -10,6 +10,5 @@ import com.ddhy.domain.YybSysBasicinfo;
 public interface SysBasicinfoRepository extends JpaRepository<YybSysBasicinfo, Integer>{
 	@Query("select s from YybSysBasicinfo s where s.yybResname=?1")
 	List<YybSysBasicinfo> findByName(String name);
-	
 
 }

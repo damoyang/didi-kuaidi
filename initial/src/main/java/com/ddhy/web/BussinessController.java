@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ddhy.domain.YybResult;
 import com.ddhy.domain.YybBussOrder;
 import com.ddhy.domain.YybBussTraderecord;
+import com.ddhy.domain.YybSysBasicinfo;
 import com.ddhy.repository.*;
 import com.ddhy.service.ActiveSenderService;
 import com.ddhy.service.GrabService;
@@ -26,6 +27,8 @@ import com.ddhy.service.UserServiceIntf;
 
 @RestController
 public class BussinessController {
+	private static Double oilPrice_s;//油价
+	private static HashMap<Integer, Double> monthNoBusy;
 	@Autowired
 	ActiveSenderService jmsService;
 	@Autowired
@@ -43,6 +46,37 @@ public class BussinessController {
 	 * TODO activeMQ
 	 * TODO 
 	 */
+	public Double getOilPrice(){
+		List<YybSysBasicinfo> rBasicinfos=sysBasicinfoRepository.findByName("油价");
+		if(rBasicinfos==null||rBasicinfos.size()==0) return null;
+		else{
+			YybSysBasicinfo oneBasicinfo=rBasicinfos.get(0);
+			return Double.parseDouble(oneBasicinfo.getYybResvalue());
+		}
+	}
+	public HashMap<Integer, Double> getNoBusyMap(){
+		HashMap<Integer, Double> reMap=new HashMap<>();
+		List<YybSysBasicinfo> rBasicinfos=sysBasicinfoRepository.findByName("淡季");
+		List<YybSysBasicinfo> rrBasicinfos=sysBasicinfoRepository.findByName("公司抽成");
+		if(rBasicinfos==null||rBasicinfos.size()==0||rrBasicinfos==null||rrBasicinfos.size()==0) return null;
+		else{
+			YybSysBasicinfo oneBasicinfo=rBasicinfos.get(0);
+			YybSysBasicinfo twoBasicinfo=rrBasicinfos.get(0);
+			String[] args1=oneBasicinfo.getYybResvalue().split("\\|");
+			String[] args2=twoBasicinfo.getYybResvalue().split("\\|");
+			Double rDouble=1.0;
+			for(String rate:args2){
+				String month=rate.substring(0,rate.indexOf(','));
+				if(month.equals("淡季")){
+					rDouble=Double.parseDouble(rate.substring(rate.indexOf(',')+1));
+				}
+			}
+			for(String month:args1){
+				reMap.put(Integer.parseInt(month), rDouble);
+			}
+			return reMap;
+		}
+	}
 	/**
 	 * 标志下单状态为已下单(即为－－已支付)
 	 * 
@@ -116,9 +150,15 @@ public class BussinessController {
 		}
 		double rate = 0.5; // 公司抽成比例 默认 0.5 
 		double oilPricePre = 7.0 ; //油价 默认为 7 从数据库中获取最新油价
+		if(oilPrice_s==null){
+			oilPrice_s=getOilPrice();
+		}
+		oilPricePre=oilPrice_s;
 		double mileage = 0; // 公里数
 		double feescale = 0.5; //高速的收费标准 根据选择的车型和载重获取收费标准 
+		//TODO what????
 		double carOil = 20.0;  //汽车的油耗（满载） 根据order中选择的车型获取油耗
+		
 		double oilPrice = 0.0; //计算的油费
 		double drierPrice =0.0;//司机工资
 		double roadPrice = 0.0;//高速费用
@@ -130,9 +170,12 @@ public class BussinessController {
 		oilPrice = oilPricePre * mileage * carOil;
 		drierPrice = oilPrice; //司机费用 ＝ 油费
 		roadPrice = feescale * mileage;//高速费
-		if(month == 3 || month ==4) //淡季
+		if(monthNoBusy==null){
+			monthNoBusy=getNoBusyMap();
+		}
+		if(monthNoBusy.containsKey(month)) //淡季
 		{
-			rate = 0.25;
+			rate = monthNoBusy.get(month);
 		}
 		double gainPrice = 0.0;  //公司盈利
 		gainPrice = oilPricePre * rate;
