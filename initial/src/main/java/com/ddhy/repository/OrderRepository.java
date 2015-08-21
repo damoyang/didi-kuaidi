@@ -35,6 +35,9 @@ public interface OrderRepository extends JpaRepository<YybBussOrder,Integer>{//J
 	List<YybBussOrder> findByUserId(Integer id);
 	@Query("select o from YybBussOrder o where yybUserid=?1")
 	List<YybBussOrder> findByUserIdPages(Integer id, Pageable pageRequest);
+	@Query("select o from YybBussOrder o where yybUserid=?1 and yybOrderstatus = '未确认'")
+	List<YybBussOrder> findNoPayByUserIdPages(Integer id, Pageable pageRequest);
+	
 	@Query("select count(o) from YybBussOrder o where yybUserid=?1")
 	int countByUserIdPages(Integer id);
 	

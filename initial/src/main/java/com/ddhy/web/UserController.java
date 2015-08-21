@@ -194,6 +194,12 @@ public class UserController {
 	public YybResult cusRegister(YybUserAccount customer,String check,HttpSession session) {
 		YybResult result = new YybResult();
 		String sessionCheck=(String)session.getAttribute(customer.getYybPhone());
+		if(sessionCheck == null)
+		{
+			result.setErrMsg("非法注册，请输入正确手机号获取验证码！");
+			result.setStatus(1);
+			return result;
+		}
 		System.out.println(sessionCheck);
 		int sessionCheckInt = Integer.parseInt(sessionCheck);
 		int  checkInt = Integer.parseInt(check);

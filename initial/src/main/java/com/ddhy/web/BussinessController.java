@@ -121,9 +121,24 @@ public class BussinessController {
      * 创建分页请求.
      */
 	//TODO 构造分页的配置 包括排序的方式
+    private PageRequest buildPageRequest(int pageNumber, int pagzSize, String sortType, String sortColumn) {
+        Sort sort = null;
+        if ("desc".equals(sortType) && sortColumn != null) {
+            sort = new Sort(Direction.DESC, sortColumn);
+        } else if ("asc".equals(sortType) && sortColumn != null) {
+            sort = new Sort(Direction.ASC, sortColumn);
+        }
+ 
+        return new PageRequest(pageNumber - 1, pagzSize, sort);
+    }
+    
+	/**
+     * 创建分页请求.
+     */
+	//TODO 构造分页的配置 包括排序的方式
     private PageRequest buildPageRequest(int pageNumber, int pagzSize, String sortType) {
         Sort sort = null;
-       /* if ("auto".equals(sortType)) {
+        /*if ("auto".equals(sortType)) {
             sort = new Sort(Direction.DESC, "id");
         } else if ("title".equals(sortType)) {
             sort = new Sort(Direction.ASC, "title");
@@ -324,7 +339,7 @@ public class BussinessController {
 		
 		YybResult result=new YybResult();
 		//TODO more choise
-		Pageable pageable = buildPageRequest(page, rows, "");
+		Pageable pageable = buildPageRequest(page, rows, "desc","yybOrdertime");
 		List<YybBussOrder> lists=orderRepository.findByOrderStatusByPage("已下单",pageable);
 		int count = orderRepository.countSendOrder("已下单");
 		//TODO more 
@@ -363,7 +378,7 @@ public class BussinessController {
 	YybResult orderlistHisByPage(Integer driverid,Integer page,Integer rows){
 		YybResult result=new YybResult();
 		//TODO more choise
-		Pageable pageable = buildPageRequest(page, rows, "");
+		Pageable pageable = buildPageRequest(page, rows,"desc","yybOrdertime");
 		List<YybBussOrder> lists=orderRepository.findByDriverIdPages(driverid,pageable);
 		int count = orderRepository.countByDriverIdPages(driverid);
 		//TODO more 
@@ -375,6 +390,27 @@ public class BussinessController {
 	}
 	
 	
+	/**
+	 * 我的未支付订单分页显示 modify by yuyajie
+	 * current by page 
+	 * 
+	 * 
+	 */
+	@RequestMapping("/busi/customnopayorderlistbypage")
+	YybResult orderlistCusNoPayByPage(Integer userid,Integer page,Integer rows){
+		
+		YybResult result=new YybResult();
+		//TODO more choise
+		Pageable pageable = buildPageRequest(page, rows,"desc","yybOrdertime");
+		List<YybBussOrder> lists=orderRepository.findNoPayByUserIdPages(userid,pageable);
+		int count = orderRepository.countByUserIdPages(userid);
+		//TODO more 
+		Map<String, Object> reMap=new HashMap<>();
+		reMap.put("orderlist", lists);
+		reMap.put("ordercount", count);
+		result.setData(reMap);
+		return result;
+	}
 	
 	/**
 	 * 我的订单分页显示 modify by yuyajie
@@ -387,7 +423,7 @@ public class BussinessController {
 		
 		YybResult result=new YybResult();
 		//TODO more choise
-		Pageable pageable = buildPageRequest(page, rows, "");
+		Pageable pageable = buildPageRequest(page, rows,"desc","yybOrdertime");
 		List<YybBussOrder> lists=orderRepository.findByUserIdPages(userid,pageable);
 		int count = orderRepository.countByUserIdPages(userid);
 		//TODO more 
