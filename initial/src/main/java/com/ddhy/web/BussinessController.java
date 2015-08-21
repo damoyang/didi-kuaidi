@@ -72,6 +72,21 @@ public class BussinessController {
     	}
     	return caroil;
     }
+    
+    /**
+	 * TODO
+	 * 根据车辆类型，获取高速收费标准
+	 * */
+    private double getRoadscale(double goodsweight) {
+    	double roadpay = 1.0;
+    	Long carweight = Math.round(goodsweight);
+    	List<YybCommonCartype> carByWeight = commonCartypeRepository.findCarByWeight(carweight.intValue());
+    	if(carByWeight != null && carByWeight.size() > 0)
+    	{
+    		roadpay = carByWeight.get(0).getYybRoadpay().doubleValue();
+    	}
+    	return roadpay;
+    }
 	
 	public HashMap<Integer, Double> getNoBusyMap(){
 		HashMap<Integer, Double> reMap=new HashMap<>();
@@ -191,7 +206,11 @@ public class BussinessController {
 		}
 		oilPricePre=oilPrice_s;
 		double mileage = 0; // 公里数
-		double feescale = 0.5; //高速的收费标准 根据选择的车型和载重获取收费标准 
+		double feescale = 0.0; //高速的收费标准 根据选择的车型和载重获取收费标准
+		if(order.getYybGoodstype() != null && order.getYybGoodstype().equals("非绿色"))
+		{
+			feescale = getRoadscale(order.getYybGoodsweight().doubleValue());
+		}
 		//TODO 从汽车类型表中根据吨位获取汽车油耗
 		double carOil = 20.0;  //汽车的油耗（满载） 根据order中选择的车型获取油耗
 		carOil = getCaroil(order.getYybGoodsweight().doubleValue()); // 获取配置的油耗
