@@ -194,7 +194,19 @@ public class UserController {
 	public YybResult cusRegister(YybUserAccount customer,String check,HttpSession session) {
 		YybResult result = new YybResult();
 		String sessionCheck=(String)session.getAttribute(customer.getYybPhone());
-		if(sessionCheck==null||!sessionCheck.equals(check)) {
+		System.out.println(sessionCheck);
+		int sessionCheckInt = Integer.parseInt(sessionCheck);
+		int  checkInt = Integer.parseInt(check);
+		if(sessionCheck.trim().equals(check.trim()) )
+		{
+			System.out.println("check,equals:"+sessionCheck);
+		}
+		
+		if(sessionCheck.trim() ==check.trim())
+		{
+			System.out.println("check == :"+sessionCheck);
+		}
+		if(sessionCheck == null || sessionCheckInt != checkInt) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
 			return result;
@@ -203,6 +215,7 @@ public class UserController {
 		if (cus == null){
 			result.setErrMsg("手机号已注册");
 			result.setStatus(1);
+			return result;
 		}
 		cus.setYybPassword("******");
 		cus.setYybPaypassword("******");
@@ -264,6 +277,7 @@ public class UserController {
 	public YybResult drvRegister(YybDriverAccount driver,String check,HttpSession session) {
 		YybResult result = new YybResult();
 		String sessionCheck=(String)session.getAttribute(driver.getYybPhone());
+		System.out.println(sessionCheck);
 		if(sessionCheck==null||!sessionCheck.equals(check)) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);

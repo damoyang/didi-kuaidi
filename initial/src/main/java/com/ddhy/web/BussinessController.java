@@ -1,11 +1,15 @@
 package com.ddhy.web;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +28,7 @@ import com.ddhy.repository.*;
 import com.ddhy.service.ActiveSenderService;
 import com.ddhy.service.GrabService;
 import com.ddhy.service.UserServiceIntf;
+import com.ddhy.util.AlipayNotify;
 
 
 @RestController
@@ -481,6 +486,104 @@ public class BussinessController {
 		//send to each car
 		return result;
 	}
+	/**
+	 * TODO 支付宝支付成功回调函数   
+	 */
+	@RequestMapping("/buss/alireturn")
+	public YybResult alipayReturnUrl(HttpServletRequest request) throws UnsupportedEncodingException {
+		YybResult result=new YybResult();
+		try {
+			Map<String, String> params = new HashMap<String, String>();
+			Map<String, String[]> requestParams = request.getParameterMap();
+			for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext();) {
+				String name = iter.next();
+				String[] values = (String[]) requestParams.get(name);
+				String valueStr = "";
+				for (int i = 0; i < values.length; i++) {
+					valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
+				}
+				valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+				params.put(name, valueStr);
+			}
+			// 商户订单号
+			String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"), "UTF-8");
+			// 支付宝交易号
+			String trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"), "UTF-8");
+			// 交易状态
+			String trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"), "UTF-8");
+			// 金额
+			String total_fee = new String(request.getParameter("total_fee").getBytes("ISO-8859-1"), "UTF-8");
+			// 验证结果
+			boolean verify_result = AlipayNotify.verify(params);
+			verify_result = true;// 测试将其赋为true
+			if (verify_result) {// 验证成功
+				if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
+					Map<String, Object> reMap=new HashMap<>();
+					reMap.put("orderno", out_trade_no);
+					reMap.put("ordermoney", total_fee);
+					result.setData(reMap);	
+					result.setSuccess(true);
+					result.setMsg("支付成功！");
+//					result = orderConfirm(out_trade_no);
+					}
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			result.setStatus(1);
+			result.setSuccess(false);
+			result.setErrMsg("支付失败！");
+		}
+		return result;
+	}
 	
+	/**
+	 * 
+	 * 支付宝支付完成 支付宝服务器做通知接口
+	 */
+	@RequestMapping("/buss/alipaynotifyurl")
+	public YybResult alipayNotifyUrl(HttpServletRequest request) throws UnsupportedEncodingException {
+		YybResult result=new YybResult();
+		try {
+			Map<String, String> params = new HashMap<String, String>();
+			Map<String, String[]> requestParams = request.getParameterMap();
+			for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext();) {
+				String name = iter.next();
+				String[] values = (String[]) requestParams.get(name);
+				String valueStr = "";
+				for (int i = 0; i < values.length; i++) {
+					valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
+				}
+				valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+				params.put(name, valueStr);
+			}
+			// 商户订单号
+			String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"), "UTF-8");
+			// 支付宝交易号
+			String trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"), "UTF-8");
+			// 交易状态
+			String trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"), "UTF-8");
+			// 金额
+			String total_fee = new String(request.getParameter("total_fee").getBytes("ISO-8859-1"), "UTF-8");
+			// 验证结果
+			boolean verify_result = AlipayNotify.verify(params);
+			verify_result = true;// 测试将其赋为true
+			if (verify_result) {// 验证成功
+				if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
+					Map<String, Object> reMap=new HashMap<>();
+					reMap.put("orderno", out_trade_no);
+					reMap.put("ordermoney", total_fee);
+					result.setData(reMap);	
+					result.setSuccess(true);
+					result.setMsg("支付成功！");
+				}
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			result.setStatus(1);
+			result.setSuccess(false);
+			result.setErrMsg("支付失败！");
+		}
+		return result;
+	}
 	
 }
