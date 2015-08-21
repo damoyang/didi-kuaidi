@@ -48,10 +48,13 @@ public class UserController {
 			sBuilder.append(random.nextInt(10));
 		}
 		String check=sBuilder.toString();
-		String msg="您的验证码为："+check;
+		String msg="手机号：" + phone + "您的验证码为："+check;
 		System.out.println(msg);
-		smsService.sendOnce(phone,msg);
+		//smsService.sendOnce(phone,msg);
 		session.setAttribute(phone, check);
+		
+		System.out.println((String)session.getAttribute(phone));
+		
 		return result;
 	}
 	@RequestMapping("/custom/updateinfo")
@@ -283,8 +286,18 @@ public class UserController {
 	public YybResult drvRegister(YybDriverAccount driver,String check,HttpSession session) {
 		YybResult result = new YybResult();
 		String sessionCheck=(String)session.getAttribute(driver.getYybPhone());
+		System.out.println(driver.getYybPhone() +":" + sessionCheck);
+		if(sessionCheck == null)
+		{
+			result.setErrMsg("非法注册，请输入正确手机号获取验证码！");
+			result.setStatus(1);
+			return result;
+		}
 		System.out.println(sessionCheck);
-		if(sessionCheck==null||!sessionCheck.equals(check)) {
+		int sessionCheckInt = Integer.parseInt(sessionCheck);
+		int  checkInt = Integer.parseInt(check);
+		
+		if(sessionCheck == null || sessionCheckInt != checkInt) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
 			return result;
