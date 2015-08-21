@@ -49,8 +49,9 @@ public class UserController {
 		}
 		String check=sBuilder.toString();
 		String msg="您的验证码为："+check;
+		System.out.println(msg);
 		smsService.sendOnce(phone,msg);
-		session.setAttribute("check", check);
+		session.setAttribute(phone, check);
 		return result;
 	}
 	@RequestMapping("/custom/updateinfo")
@@ -192,7 +193,7 @@ public class UserController {
 	@RequestMapping("/custom/register")
 	public YybResult cusRegister(YybUserAccount customer,String check,HttpSession session) {
 		YybResult result = new YybResult();
-		String sessionCheck=(String)session.getAttribute("check");
+		String sessionCheck=(String)session.getAttribute(customer.getYybPhone());
 		if(sessionCheck==null||!sessionCheck.equals(check)) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
@@ -203,6 +204,8 @@ public class UserController {
 			result.setErrMsg("手机号已注册");
 			result.setStatus(1);
 		}
+		cus.setYybPassword("******");
+		cus.setYybPaypassword("******");
 		result.setData(cus);
 		return result;
 	}
@@ -221,7 +224,7 @@ public class UserController {
 	@RequestMapping("/driver/updatepswd")
 	public YybResult drvUpdatePassWord(String phone,String password,String check,HttpSession session){
 		YybResult result=new YybResult();
-		String sessionCheck=(String)session.getAttribute("check");
+		String sessionCheck=(String)session.getAttribute(phone);
 		if(sessionCheck==null||!sessionCheck.equals(check)) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
@@ -240,7 +243,7 @@ public class UserController {
 	@RequestMapping("/custom/updatepswd")
 	public YybResult customUpdatePassWord(String phone,String password,String check,HttpSession session){
 		YybResult result=new YybResult();
-		String sessionCheck=(String)session.getAttribute("check");
+		String sessionCheck=(String)session.getAttribute(phone);
 		if(sessionCheck==null||!sessionCheck.equals(check)) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
@@ -260,7 +263,7 @@ public class UserController {
 	@RequestMapping("/driver/register")
 	public YybResult drvRegister(YybDriverAccount driver,String check,HttpSession session) {
 		YybResult result = new YybResult();
-		String sessionCheck=(String)session.getAttribute("check");
+		String sessionCheck=(String)session.getAttribute(driver.getYybPhone());
 		if(sessionCheck==null||!sessionCheck.equals(check)) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
