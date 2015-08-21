@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ddhy.domain.YybResult;
 import com.ddhy.domain.YybBussOrder;
 import com.ddhy.domain.YybBussTraderecord;
+import com.ddhy.domain.YybCommonCartype;
 import com.ddhy.domain.YybSysBasicinfo;
 import com.ddhy.repository.*;
 import com.ddhy.service.ActiveSenderService;
@@ -41,6 +42,8 @@ public class BussinessController {
 	UserServiceIntf userService;
 	@Autowired
 	SysBasicinfoRepository sysBasicinfoRepository;
+	@Autowired
+	CommonCartypeRepository commonCartypeRepository;
 	/**
 	 * TODO baidu search
 	 * TODO activeMQ
@@ -54,6 +57,22 @@ public class BussinessController {
 			return Double.parseDouble(oneBasicinfo.getYybResvalue());
 		}
 	}
+	
+	/**
+	 * TODO
+	 * 根据货物重量，获取货车油耗
+	 * */
+    private double getCaroil(double goodsweight) {
+    	double caroil = 20.0;
+    	Long carweight = Math.round(goodsweight);
+    	List<YybCommonCartype> carByWeight = commonCartypeRepository.findCarByWeight(carweight.intValue());
+    	if(carByWeight != null && carByWeight.size() > 0)
+    	{
+    		caroil = carByWeight.get(0).getYybCaroil().doubleValue();
+    	}
+    	return caroil;
+    }
+	
 	public HashMap<Integer, Double> getNoBusyMap(){
 		HashMap<Integer, Double> reMap=new HashMap<>();
 		List<YybSysBasicinfo> rBasicinfos=sysBasicinfoRepository.findByName("淡季");
@@ -67,7 +86,7 @@ public class BussinessController {
 			Double rDouble=1.0;
 			for(String rate:args2){
 				String month=rate.substring(0,rate.indexOf(','));
-				if(month.equals("淡季")){
+				if(month!=null && month.equals("淡季")){
 					rDouble=Double.parseDouble(rate.substring(rate.indexOf(',')+1));
 				}
 			}
@@ -77,6 +96,22 @@ public class BussinessController {
 			return reMap;
 		}
 	}
+	
+	/**
+     * 创建分页请求.
+     */
+	//TODO 构造分页的配置 包括排序的方式
+    private PageRequest buildPageRequest(int pageNumber, int pagzSize, String sortType) {
+        Sort sort = null;
+       /* if ("auto".equals(sortType)) {
+            sort = new Sort(Direction.DESC, "id");
+        } else if ("title".equals(sortType)) {
+            sort = new Sort(Direction.ASC, "title");
+        }*/
+ 
+        return new PageRequest(pageNumber - 1, pagzSize, sort);
+    }
+	
 	/**
 	 * 标志下单状态为已下单(即为－－已支付)
 	 * 
@@ -143,6 +178,7 @@ public class BussinessController {
 		//公里数＝ order.getYybMileage();
 		//油价 取资源中数据， 油耗根据根据车辆类型获取油耗 ，公司抽成：根据当前月份判断淡季和旺季确定抽成
 		Date startTime = order.getYybStarttime();//根据装货时间获取月份
+		
 		int month = 1;
 		if(startTime != null)
 		{
@@ -156,9 +192,9 @@ public class BussinessController {
 		oilPricePre=oilPrice_s;
 		double mileage = 0; // 公里数
 		double feescale = 0.5; //高速的收费标准 根据选择的车型和载重获取收费标准 
-		//TODO what????
+		//TODO 从汽车类型表中根据吨位获取汽车油耗
 		double carOil = 20.0;  //汽车的油耗（满载） 根据order中选择的车型获取油耗
-		
+		carOil = getCaroil(order.getYybGoodsweight().doubleValue()); // 获取配置的油耗
 		double oilPrice = 0.0; //计算的油费
 		double drierPrice =0.0;//司机工资
 		double roadPrice = 0.0;//高速费用
@@ -173,7 +209,7 @@ public class BussinessController {
 		if(monthNoBusy==null){
 			monthNoBusy=getNoBusyMap();
 		}
-		if(monthNoBusy.containsKey(month)) //淡季
+		if(monthNoBusy != null && monthNoBusy.containsKey(month)) //淡季
 		{
 			rate = monthNoBusy.get(month);
 		}
@@ -314,20 +350,7 @@ public class BussinessController {
 		return result;
 	}
 	
-	/**
-     * 创建分页请求.
-     */
-	//TODO 构造分页的配置 包括排序的方式
-    private PageRequest buildPageRequest(int pageNumber, int pagzSize, String sortType) {
-        Sort sort = null;
-       /* if ("auto".equals(sortType)) {
-            sort = new Sort(Direction.DESC, "id");
-        } else if ("title".equals(sortType)) {
-            sort = new Sort(Direction.ASC, "title");
-        }*/
- 
-        return new PageRequest(pageNumber - 1, pagzSize, sort);
-    }
+	
 	
 	/**
 	 * 我的订单分页显示 modify by yuyajie

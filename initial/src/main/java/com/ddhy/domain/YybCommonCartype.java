@@ -29,6 +29,12 @@ public class YybCommonCartype implements Serializable {
 
 	@Column(name="yyb_weight")
 	private int yybWeight;
+	
+	@Column(name="yyb_caroil")
+	private BigDecimal yybCaroil;
+	
+	@Column(name="yyb_lowerweight")
+	private int yybLowerweight;
 
     public YybCommonCartype() {
     }
@@ -71,6 +77,22 @@ public class YybCommonCartype implements Serializable {
 
 	public void setYybWeight(int yybWeight) {
 		this.yybWeight = yybWeight;
+	}
+
+	public int getYybLowerweight() {
+		return yybLowerweight;
+	}
+
+	public void setYybLowerweight(int yybLowerweight) {
+		this.yybLowerweight = yybLowerweight;
+	}
+
+	public BigDecimal getYybCaroil() {
+		return yybCaroil;
+	}
+
+	public void setYybCaroil(BigDecimal yybCaroil) {
+		this.yybCaroil = yybCaroil;
 	}
 
 }
