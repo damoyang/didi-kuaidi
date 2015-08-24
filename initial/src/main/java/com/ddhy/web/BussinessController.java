@@ -166,6 +166,9 @@ public class BussinessController {
 		if(order.getYybMileage() != null)
 		{
 			mileage = order.getYybMileage().doubleValue(); //获取计算的公里数
+		}else{
+			//TODO
+			
 		}
 		oilPrice = oilPricePre * mileage * carOil;
 		drierPrice = oilPrice; //司机费用 ＝ 油费

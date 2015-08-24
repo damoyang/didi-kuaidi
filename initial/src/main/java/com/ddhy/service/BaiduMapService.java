@@ -31,6 +31,7 @@ public class BaiduMapService {
 	public static String url_geoTableList="http://api.map.baidu.com/geodata/v3/geotable/list";
 	public static String url_addPOI="http://api.map.baidu.com/geodata/v3/poi/create";
 	public static String url_updatePOI="http://api.map.baidu.com/geodata/v3/poi/update";
+	public static String url_calculateDisPOI="";
 	
 	static RestTemplate restTemplate;
 	static {

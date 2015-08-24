@@ -33,6 +33,11 @@ public class UserController {
 	DriverPaperRepository driverPaperRepository;
 	@Autowired
 	SMSService smsService;
+	@RequestMapping("/hello")
+	public YybResult greeting(){
+		YybResult result=new YybResult();
+		return result;
+	}
 	
 	@RequestMapping("/custom/checknum")
 	@ApiOperation(value = "Create new Landlord", notes = "Creates new Landlord")
@@ -49,8 +54,10 @@ public class UserController {
 		}
 		String check=sBuilder.toString();
 		String msg="您的验证码为："+check;
+		System.out.println(phone+msg);
 		smsService.sendOnce(phone,msg);
 		session.setAttribute("check", check);
+		result.setData(check);
 		return result;
 	}
 	@RequestMapping("/custom/updateinfo")
@@ -254,6 +261,7 @@ public class UserController {
 		}
 		userAccount.setYybPassword(password);
 		customerRepository.save(userAccount);
+		System.out.println();
 		return result;
 	}
 

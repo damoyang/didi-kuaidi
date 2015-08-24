@@ -28,7 +28,7 @@ public class YybBussOrder implements Serializable {
 
     @Temporal( TemporalType.DATE)
 	@Column(name="yyb_arrivetime")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybArrivetime;
 
 	@Column(name="yyb_calcmoney")
@@ -54,7 +54,7 @@ public class YybBussOrder implements Serializable {
 
     @Temporal( TemporalType.TIMESTAMP)
 	@Column(name="yyb_endtime")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybEndtime;
 
 	@Column(name="yyb_goodsaddress")
@@ -83,7 +83,7 @@ public class YybBussOrder implements Serializable {
 
     @Temporal( TemporalType.TIMESTAMP)
 	@Column(name="yyb_judgetime")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybJudgetime;
 
 	@Column(name="yyb_mileage")
@@ -107,7 +107,7 @@ public class YybBussOrder implements Serializable {
 
     @Temporal( TemporalType.TIMESTAMP)
 	@Column(name="yyb_paytime")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybPaytime;
 
 	@Column(name="yyb_realmoney")
@@ -115,12 +115,12 @@ public class YybBussOrder implements Serializable {
 
     @Temporal( TemporalType.TIMESTAMP)
 	@Column(name="yyb_realstarttime")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybRealstarttime;
 
     @Temporal( TemporalType.TIMESTAMP)
 	@Column(name="yyb_starttime")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybStarttime;
 
 	@Column(name="yyb_targetaddress")
