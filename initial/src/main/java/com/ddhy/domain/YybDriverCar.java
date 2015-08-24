@@ -28,7 +28,7 @@ public class YybDriverCar implements Serializable {
 
     @Temporal( TemporalType.DATE)
 	@Column(name="yyb_carbuy")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybCarbuy;
 
 	@Column(name="yyb_carheight")
@@ -42,7 +42,7 @@ public class YybDriverCar implements Serializable {
 
     @Temporal( TemporalType.DATE)
 	@Column(name="yyb_carmot")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybCarmot;
 
 	@Column(name="yyb_caroil")
@@ -78,7 +78,7 @@ public class YybDriverCar implements Serializable {
 
     @Temporal( TemporalType.DATE)
 	@Column(name="yyb_vehiclelicensedate")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybVehiclelicensedate;
 
     public YybDriverCar() {

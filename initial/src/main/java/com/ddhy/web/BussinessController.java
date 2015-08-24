@@ -1,11 +1,15 @@
 package com.ddhy.web;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -18,11 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ddhy.domain.YybResult;
 import com.ddhy.domain.YybBussOrder;
 import com.ddhy.domain.YybBussTraderecord;
+import com.ddhy.domain.YybCommonCartype;
 import com.ddhy.domain.YybSysBasicinfo;
 import com.ddhy.repository.*;
 import com.ddhy.service.ActiveSenderService;
 import com.ddhy.service.GrabService;
 import com.ddhy.service.UserServiceIntf;
+import com.ddhy.util.AlipayNotify;
 
 
 @RestController
@@ -41,6 +47,8 @@ public class BussinessController {
 	UserServiceIntf userService;
 	@Autowired
 	SysBasicinfoRepository sysBasicinfoRepository;
+	@Autowired
+	CommonCartypeRepository commonCartypeRepository;
 	/**
 	 * TODO baidu search
 	 * TODO activeMQ
@@ -54,6 +62,37 @@ public class BussinessController {
 			return Double.parseDouble(oneBasicinfo.getYybResvalue());
 		}
 	}
+	
+	/**
+	 * TODO
+	 * 根据货物重量，获取货车油耗
+	 * */
+    private double getCaroil(double goodsweight) {
+    	double caroil = 20.0;
+    	Long carweight = Math.round(goodsweight);
+    	List<YybCommonCartype> carByWeight = commonCartypeRepository.findCarByWeight(carweight.intValue());
+    	if(carByWeight != null && carByWeight.size() > 0)
+    	{
+    		caroil = carByWeight.get(0).getYybCaroil().doubleValue();
+    	}
+    	return caroil;
+    }
+    
+    /**
+	 * TODO
+	 * 根据车辆类型，获取高速收费标准
+	 * */
+    private double getRoadscale(double goodsweight) {
+    	double roadpay = 1.0;
+    	Long carweight = Math.round(goodsweight);
+    	List<YybCommonCartype> carByWeight = commonCartypeRepository.findCarByWeight(carweight.intValue());
+    	if(carByWeight != null && carByWeight.size() > 0)
+    	{
+    		roadpay = carByWeight.get(0).getYybRoadpay().doubleValue();
+    	}
+    	return roadpay;
+    }
+	
 	public HashMap<Integer, Double> getNoBusyMap(){
 		HashMap<Integer, Double> reMap=new HashMap<>();
 		List<YybSysBasicinfo> rBasicinfos=sysBasicinfoRepository.findByName("淡季");
@@ -67,7 +106,7 @@ public class BussinessController {
 			Double rDouble=1.0;
 			for(String rate:args2){
 				String month=rate.substring(0,rate.indexOf(','));
-				if(month.equals("淡季")){
+				if(month!=null && month.equals("淡季")){
 					rDouble=Double.parseDouble(rate.substring(rate.indexOf(',')+1));
 				}
 			}
@@ -77,6 +116,37 @@ public class BussinessController {
 			return reMap;
 		}
 	}
+	
+	/**
+     * 创建分页请求.
+     */
+	//TODO 构造分页的配置 包括排序的方式
+    private PageRequest buildPageRequest(int pageNumber, int pagzSize, String sortType, String sortColumn) {
+        Sort sort = null;
+        if ("desc".equals(sortType) && sortColumn != null) {
+            sort = new Sort(Direction.DESC, sortColumn);
+        } else if ("asc".equals(sortType) && sortColumn != null) {
+            sort = new Sort(Direction.ASC, sortColumn);
+        }
+ 
+        return new PageRequest(pageNumber - 1, pagzSize, sort);
+    }
+    
+	/**
+     * 创建分页请求.
+     */
+	//TODO 构造分页的配置 包括排序的方式
+    private PageRequest buildPageRequest(int pageNumber, int pagzSize, String sortType) {
+        Sort sort = null;
+        /*if ("auto".equals(sortType)) {
+            sort = new Sort(Direction.DESC, "id");
+        } else if ("title".equals(sortType)) {
+            sort = new Sort(Direction.ASC, "title");
+        }*/
+ 
+        return new PageRequest(pageNumber - 1, pagzSize, sort);
+    }
+	
 	/**
 	 * 标志下单状态为已下单(即为－－已支付)
 	 * 
@@ -143,6 +213,7 @@ public class BussinessController {
 		//公里数＝ order.getYybMileage();
 		//油价 取资源中数据， 油耗根据根据车辆类型获取油耗 ，公司抽成：根据当前月份判断淡季和旺季确定抽成
 		Date startTime = order.getYybStarttime();//根据装货时间获取月份
+		
 		int month = 1;
 		if(startTime != null)
 		{
@@ -155,10 +226,14 @@ public class BussinessController {
 		}
 		oilPricePre=oilPrice_s;
 		double mileage = 0; // 公里数
-		double feescale = 0.5; //高速的收费标准 根据选择的车型和载重获取收费标准 
-		//TODO what????
+		double feescale = 0.0; //高速的收费标准 根据选择的车型和载重获取收费标准
+		if(order.getYybGoodstype() != null && order.getYybGoodstype().equals("非绿色"))
+		{
+			feescale = getRoadscale(order.getYybGoodsweight().doubleValue());
+		}
+		//TODO 从汽车类型表中根据吨位获取汽车油耗
 		double carOil = 20.0;  //汽车的油耗（满载） 根据order中选择的车型获取油耗
-		
+		carOil = getCaroil(order.getYybGoodsweight().doubleValue()); // 获取配置的油耗
 		double oilPrice = 0.0; //计算的油费
 		double drierPrice =0.0;//司机工资
 		double roadPrice = 0.0;//高速费用
@@ -176,7 +251,7 @@ public class BussinessController {
 		if(monthNoBusy==null){
 			monthNoBusy=getNoBusyMap();
 		}
-		if(monthNoBusy.containsKey(month)) //淡季
+		if(monthNoBusy != null && monthNoBusy.containsKey(month)) //淡季
 		{
 			rate = monthNoBusy.get(month);
 		}
@@ -267,7 +342,7 @@ public class BussinessController {
 		
 		YybResult result=new YybResult();
 		//TODO more choise
-		Pageable pageable = buildPageRequest(page, rows, "");
+		Pageable pageable = buildPageRequest(page, rows, "desc","yybOrdertime");
 		List<YybBussOrder> lists=orderRepository.findByOrderStatusByPage("已下单",pageable);
 		int count = orderRepository.countSendOrder("已下单");
 		//TODO more 
@@ -306,7 +381,7 @@ public class BussinessController {
 	YybResult orderlistHisByPage(Integer driverid,Integer page,Integer rows){
 		YybResult result=new YybResult();
 		//TODO more choise
-		Pageable pageable = buildPageRequest(page, rows, "");
+		Pageable pageable = buildPageRequest(page, rows,"desc","yybOrdertime");
 		List<YybBussOrder> lists=orderRepository.findByDriverIdPages(driverid,pageable);
 		int count = orderRepository.countByDriverIdPages(driverid);
 		//TODO more 
@@ -317,20 +392,28 @@ public class BussinessController {
 		return result;
 	}
 	
+	
 	/**
-     * 创建分页请求.
-     */
-	//TODO 构造分页的配置 包括排序的方式
-    private PageRequest buildPageRequest(int pageNumber, int pagzSize, String sortType) {
-        Sort sort = null;
-       /* if ("auto".equals(sortType)) {
-            sort = new Sort(Direction.DESC, "id");
-        } else if ("title".equals(sortType)) {
-            sort = new Sort(Direction.ASC, "title");
-        }*/
- 
-        return new PageRequest(pageNumber - 1, pagzSize, sort);
-    }
+	 * 我的未支付订单分页显示 modify by yuyajie
+	 * current by page 
+	 * 
+	 * 
+	 */
+	@RequestMapping("/busi/customnopayorderlistbypage")
+	YybResult orderlistCusNoPayByPage(Integer userid,Integer page,Integer rows){
+		
+		YybResult result=new YybResult();
+		//TODO more choise
+		Pageable pageable = buildPageRequest(page, rows,"desc","yybOrdertime");
+		List<YybBussOrder> lists=orderRepository.findNoPayByUserIdPages(userid,pageable);
+		int count = orderRepository.countByUserIdPages(userid);
+		//TODO more 
+		Map<String, Object> reMap=new HashMap<>();
+		reMap.put("orderlist", lists);
+		reMap.put("ordercount", count);
+		result.setData(reMap);
+		return result;
+	}
 	
 	/**
 	 * 我的订单分页显示 modify by yuyajie
@@ -343,7 +426,7 @@ public class BussinessController {
 		
 		YybResult result=new YybResult();
 		//TODO more choise
-		Pageable pageable = buildPageRequest(page, rows, "");
+		Pageable pageable = buildPageRequest(page, rows,"desc","yybOrdertime");
 		List<YybBussOrder> lists=orderRepository.findByUserIdPages(userid,pageable);
 		int count = orderRepository.countByUserIdPages(userid);
 		//TODO more 
@@ -442,6 +525,104 @@ public class BussinessController {
 		//send to each car
 		return result;
 	}
+	/**
+	 * TODO 支付宝支付成功回调函数   
+	 */
+	@RequestMapping("/buss/alireturn")
+	public YybResult alipayReturnUrl(HttpServletRequest request) throws UnsupportedEncodingException {
+		YybResult result=new YybResult();
+		try {
+			Map<String, String> params = new HashMap<String, String>();
+			Map<String, String[]> requestParams = request.getParameterMap();
+			for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext();) {
+				String name = iter.next();
+				String[] values = (String[]) requestParams.get(name);
+				String valueStr = "";
+				for (int i = 0; i < values.length; i++) {
+					valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
+				}
+				valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+				params.put(name, valueStr);
+			}
+			// 商户订单号
+			String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"), "UTF-8");
+			// 支付宝交易号
+			String trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"), "UTF-8");
+			// 交易状态
+			String trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"), "UTF-8");
+			// 金额
+			String total_fee = new String(request.getParameter("total_fee").getBytes("ISO-8859-1"), "UTF-8");
+			// 验证结果
+			boolean verify_result = AlipayNotify.verify(params);
+			verify_result = true;// 测试将其赋为true
+			if (verify_result) {// 验证成功
+				if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
+					Map<String, Object> reMap=new HashMap<>();
+					reMap.put("orderno", out_trade_no);
+					reMap.put("ordermoney", total_fee);
+					result.setData(reMap);	
+					result.setSuccess(true);
+					result.setMsg("支付成功！");
+//					result = orderConfirm(out_trade_no);
+					}
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			result.setStatus(1);
+			result.setSuccess(false);
+			result.setErrMsg("支付失败！");
+		}
+		return result;
+	}
 	
+	/**
+	 * 
+	 * 支付宝支付完成 支付宝服务器做通知接口
+	 */
+	@RequestMapping("/buss/alipaynotifyurl")
+	public YybResult alipayNotifyUrl(HttpServletRequest request) throws UnsupportedEncodingException {
+		YybResult result=new YybResult();
+		try {
+			Map<String, String> params = new HashMap<String, String>();
+			Map<String, String[]> requestParams = request.getParameterMap();
+			for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext();) {
+				String name = iter.next();
+				String[] values = (String[]) requestParams.get(name);
+				String valueStr = "";
+				for (int i = 0; i < values.length; i++) {
+					valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
+				}
+				valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+				params.put(name, valueStr);
+			}
+			// 商户订单号
+			String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"), "UTF-8");
+			// 支付宝交易号
+			String trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"), "UTF-8");
+			// 交易状态
+			String trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"), "UTF-8");
+			// 金额
+			String total_fee = new String(request.getParameter("total_fee").getBytes("ISO-8859-1"), "UTF-8");
+			// 验证结果
+			boolean verify_result = AlipayNotify.verify(params);
+			verify_result = true;// 测试将其赋为true
+			if (verify_result) {// 验证成功
+				if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
+					Map<String, Object> reMap=new HashMap<>();
+					reMap.put("orderno", out_trade_no);
+					reMap.put("ordermoney", total_fee);
+					result.setData(reMap);	
+					result.setSuccess(true);
+					result.setMsg("支付成功！");
+				}
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			result.setStatus(1);
+			result.setSuccess(false);
+			result.setErrMsg("支付失败！");
+		}
+		return result;
+	}
 	
 }
