@@ -32,7 +32,6 @@ public class YybDriverCar implements Serializable {
 	@Column(name="yyb_carbuy")
     @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybCarbuy;
-    private String yybCarbuystr;
     
 	@Column(name="yyb_carheight")
 	private BigDecimal yybCarheight;
@@ -47,7 +46,6 @@ public class YybDriverCar implements Serializable {
 	@Column(name="yyb_carmot")
     @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybCarmot;
-    private String yybCarmotstr;
 
 	@Column(name="yyb_caroil")
 	private BigDecimal yybCaroil;
@@ -84,7 +82,6 @@ public class YybDriverCar implements Serializable {
 	@Column(name="yyb_vehiclelicensedate")
     @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybVehiclelicensedate;
-    private String yybVehiclelicensestr;
     
     public YybDriverCar() {
     }
@@ -109,8 +106,14 @@ public class YybDriverCar implements Serializable {
 		return this.yybCarbuy;
 	}
 
-	public void setYybCarbuy(Date yybCarbuy) {
-		this.yybCarbuy = yybCarbuy;
+	public void setYybCarbuy(String yybCarbuystr) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
+		try {
+			this.yybCarbuy = sdf.parse(yybCarbuystr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
 	}
 
 	public BigDecimal getYybCarheight() {
@@ -141,8 +144,14 @@ public class YybDriverCar implements Serializable {
 		return this.yybCarmot;
 	}
 
-	public void setYybCarmot(Date yybCarmot) {
-		this.yybCarmot = yybCarmot;
+	public void setYybCarmot(String yybCarmotstr) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
+		try {
+			this.yybCarmot = sdf.parse(yybCarmotstr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
 	}
 
 	public BigDecimal getYybCaroil() {
@@ -229,11 +238,18 @@ public class YybDriverCar implements Serializable {
 		return this.yybVehiclelicensedate;
 	}
 
-	public void setYybVehiclelicensedate(Date yybVehiclelicensedate) {
+	public void setYybVehiclelicensedate(String yybVehiclelicensestr) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
+		try {
+			this.yybVehiclelicensedate = sdf.parse(yybVehiclelicensestr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
 		this.yybVehiclelicensedate = yybVehiclelicensedate;
 	}
 
-	public String getYybVehiclelicensestr() {
+	/*public String getYybVehiclelicensestr() {
 		return yybVehiclelicensestr;
 	}
 
@@ -276,6 +292,6 @@ public class YybDriverCar implements Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}  
-	}
+	}*/
 
 }

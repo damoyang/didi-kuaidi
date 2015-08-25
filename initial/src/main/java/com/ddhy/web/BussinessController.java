@@ -29,6 +29,11 @@ import com.ddhy.service.ActiveSenderService;
 import com.ddhy.service.GrabService;
 import com.ddhy.service.UserServiceIntf;
 import com.ddhy.util.AlipayNotify;
+import com.ddhy.util.HttpUrlRequestUtil;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 
 @RestController
@@ -201,8 +206,24 @@ public class BussinessController {
 			result.setStatus(1);
 			result.setSuccess(false);
 			result.setErrMsg("参数错误，请检查［起始地点｜车辆类型｜货物类型｜货物重量｜货物体积］");
+			return result;
 		}
 		order.init();
+		//TODO 根据起始地点 和 目标地点 获取 运送距离
+		String origin = order.getYybGoodsaddress() ;//  //起始地点
+		String destination = order.getYybTargetaddress(); //目标地点
+		String origin_region = order.getYybGoodsprovince(); //起始地点所在城市 
+		String destination_region = order.getYybTargetprovince(); //目标点地点所在城市
+		String ak = "DC6acaecdf0fc9e0b15b582b3c23bfb0";//应用ak
+		
+		String baiduApi = "http://api.map.baidu.com/direction/v1?mode=driving&origin=%s&destination=%s&origin_region=%s&destination_region=%s&output=json&ak=%s";
+		String baiduApiUrl = String.format(baiduApi,origin,destination,origin_region,destination_region,ak);
+		String ret = HttpUrlRequestUtil.request(baiduApiUrl);
+		
+		//JSONArray baiduRS = new JSONArray().fromObject(ret);
+		/*result  routes  distance
+		baiduRS.get("result")*/
+		
 		//此处需要根据订单中车辆的类型计算 油费和总费用  计算方式 
 		//油费＝公里数 ＊ 油价 ＊ 油耗
 		//公里数＝装货位置和目标位置定总距离

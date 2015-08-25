@@ -366,19 +366,50 @@ public class UserController {
 		}
 		return result;
 	}
-
+	
+	
 	@RequestMapping("/driver/addcar")
 	YybResult driverAddCar(YybDriverCar yybDriverCar){
 		YybResult result=new YybResult();
+		
 		YybDriverAccount driver=driverRepository.findOne(yybDriverCar.getYybDriverid());
 		if(driver==null){
-			result.setErrMsg("driverid is not valid");
+			result.setErrMsg("司机账户不存在，请重新登陆");
 			result.setStatus(1);
 		}else{
+			//根据车牌获取，不允许重复添加车辆
+			List<YybDriverCar> cars = driverCarRepository.findByCarlicense(yybDriverCar.getYybCarlicense());
+			if(cars.size() > 0)
+			{
+				result.setErrMsg("该车已经添加！");
+				result.setStatus(1);
+				return result;
+			}
 			driverCarRepository.save(yybDriverCar);
 		}
 		return result;
 	}
+	
+	/**
+	 * @info 根据司机id获取车辆信息
+	 * @param driverid 司机id
+	 * */
+	@RequestMapping("/driver/getcarbydriverid")
+	YybResult getCarByDriverid(Integer driverid){
+		YybResult result=new YybResult();
+		if(driverid == null)
+		{
+			result.setErrMsg("参数错误！");
+			result.setStatus(1);
+			return result;
+		}
+		List<YybDriverCar> cars=driverCarRepository.findByDriverId(driverid);
+		Map<String, Object> reMap=new HashMap<String, Object>();
+		reMap.put("cars",cars);
+		result.setData(reMap);
+		return result;
+	}
+	
 	@RequestMapping(value="/driver/uploadcarpic",method=RequestMethod.POST)
 	public YybResult uploadDriverCarPic(YybDriverCar driveCar,@RequestParam("file") MultipartFile file) {
 		String basedir="resources/carpic/";
