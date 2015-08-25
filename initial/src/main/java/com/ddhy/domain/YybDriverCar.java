@@ -6,6 +6,8 @@ import javax.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -30,7 +32,8 @@ public class YybDriverCar implements Serializable {
 	@Column(name="yyb_carbuy")
     @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybCarbuy;
-
+    private String yybCarbuystr;
+    
 	@Column(name="yyb_carheight")
 	private BigDecimal yybCarheight;
 
@@ -44,6 +47,7 @@ public class YybDriverCar implements Serializable {
 	@Column(name="yyb_carmot")
     @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybCarmot;
+    private String yybCarmotstr;
 
 	@Column(name="yyb_caroil")
 	private BigDecimal yybCaroil;
@@ -80,7 +84,8 @@ public class YybDriverCar implements Serializable {
 	@Column(name="yyb_vehiclelicensedate")
     @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybVehiclelicensedate;
-
+    private String yybVehiclelicensestr;
+    
     public YybDriverCar() {
     }
 
@@ -226,6 +231,51 @@ public class YybDriverCar implements Serializable {
 
 	public void setYybVehiclelicensedate(Date yybVehiclelicensedate) {
 		this.yybVehiclelicensedate = yybVehiclelicensedate;
+	}
+
+	public String getYybVehiclelicensestr() {
+		return yybVehiclelicensestr;
+	}
+
+	public void setYybVehiclelicensestr(String yybVehiclelicensestr) {
+		this.yybVehiclelicensestr = yybVehiclelicensestr;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
+		try {
+			this.yybVehiclelicensedate = sdf.parse(yybVehiclelicensestr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+	}
+
+	public String getYybCarbuystr() {
+		return yybCarbuystr;
+	}
+
+	public void setYybCarbuystr(String yybCarbuystr) {
+		this.yybCarbuystr = yybCarbuystr;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
+		try {
+			this.yybCarbuy = sdf.parse(yybCarbuystr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+	}
+
+	public String getYybCarmotstr() {
+		return yybCarmotstr;
+	}
+
+	public void setYybCarmotstr(String yybCarmotstr) {
+		this.yybCarmotstr = yybCarmotstr;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
+		try {
+			this.yybCarmot = sdf.parse(yybCarmotstr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
 	}
 
 }
