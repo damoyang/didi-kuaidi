@@ -30,6 +30,9 @@ import com.ddhy.service.BaiduMapService;
 import com.ddhy.service.GrabService;
 import com.ddhy.service.UserServiceIntf;
 import com.ddhy.util.AlipayNotify;
+import com.ddhy.util.HttpUrlRequestUtil;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
+
 
 @RestController
 public class BussinessController {
@@ -210,6 +213,7 @@ public class BussinessController {
 			result.setStatus(1);
 			result.setSuccess(false);
 			result.setErrMsg("参数错误，请检查［起始地点｜车辆类型｜货物类型｜货物重量｜货物体积］");
+			return result;
 		}
 		order.init();
 		// 计算地理位置信息 百度地图支持 城市 详细地址 二维检索
@@ -228,6 +232,8 @@ public class BussinessController {
 			return result;
 		}
 		order.setYybMileage(new BigDecimal(dis));
+		order.setYybOrigin(origin);
+		order.setYybDestination(destination);
 		// 此处需要根据订单中车辆的类型计算 油费和总费用 计算方式
 		// 油费＝公里数 ＊ 油价 ＊ 油耗
 		// 公里数＝装货位置和目标位置定总距离
@@ -238,7 +244,7 @@ public class BussinessController {
 		// 公里数＝ order.getYybMileage();
 		// 油价 取资源中数据， 油耗根据根据车辆类型获取油耗 ，公司抽成：根据当前月份判断淡季和旺季确定抽成
 		Date startTime = order.getYybStarttime();// 根据装货时间获取月份
-
+		
 		int month = 1;
 		if (startTime != null) {
 			month = startTime.getMonth();
