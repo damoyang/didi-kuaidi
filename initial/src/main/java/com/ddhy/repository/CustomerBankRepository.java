@@ -14,7 +14,13 @@ import com.ddhy.domain.*;
  * @version 1.0.0
  */
 public interface CustomerBankRepository extends JpaRepository<YybUserBank,Integer>{
+	
 	@Query("select b from YybUserBank b where yybUserid=?1")
 	List<YybUserBank> findByUserId(Integer id);
+	
+	@Query("select b from YybUserBank b where yybUserid=?1 and yybBanknum=?2")
+	List<YybUserBank> findByUserAndName(Integer id,String name);
+
+
 	
 }

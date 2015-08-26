@@ -56,7 +56,7 @@ public class UserController {
 		String msg="您的验证码为："+check;
 		System.out.println(phone+msg);
 		smsService.sendOnce(phone,msg);
-		session.setAttribute("check", check);
+		session.setAttribute(phone, check);
 		result.setData(check);
 		return result;
 	}
@@ -206,7 +206,7 @@ public class UserController {
 	@RequestMapping("/custom/register")
 	public YybResult cusRegister(YybUserAccount customer,String check,HttpSession session) {
 		YybResult result = new YybResult();
-		String sessionCheck=(String)session.getAttribute("check");
+		String sessionCheck=(String)session.getAttribute(customer.getYybPhone());
 		if(sessionCheck == null)
 		{
 			result.setErrMsg("非法注册，请输入正确手机号获取验证码！");
@@ -245,7 +245,7 @@ public class UserController {
 	@RequestMapping("/driver/updatepswd")
 	public YybResult drvUpdatePassWord(String phone,String password,String check,HttpSession session){
 		YybResult result=new YybResult();
-		String sessionCheck=(String)session.getAttribute("check");
+		String sessionCheck=(String)session.getAttribute(phone);
 		if(sessionCheck==null||!sessionCheck.equals(check)) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
@@ -264,7 +264,7 @@ public class UserController {
 	@RequestMapping("/custom/updatepswd")
 	public YybResult customUpdatePassWord(String phone,String password,String check,HttpSession session){
 		YybResult result=new YybResult();
-		String sessionCheck=(String)session.getAttribute("check");
+		String sessionCheck=(String)session.getAttribute(phone);
 		if(sessionCheck==null||!sessionCheck.equals(check)) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
@@ -285,7 +285,7 @@ public class UserController {
 	@RequestMapping("/driver/register")
 	public YybResult drvRegister(YybDriverAccount driver,String check,HttpSession session) {
 		YybResult result = new YybResult();
-		String sessionCheck=(String)session.getAttribute("check");
+		String sessionCheck=(String)session.getAttribute(driver.getYybPhone());
 		System.out.println(driver.getYybPhone() +":" + sessionCheck);
 		if(sessionCheck == null)
 		{
@@ -461,6 +461,12 @@ public class UserController {
 			e.printStackTrace();
 			return "";
 		}
+	}
+	@RequestMapping("/t")
+	public YybResult TT(){
+		YybResult result=new YybResult();
+		customerBankRepository.findByUserAndName(22, "test");
+		return result;
 	}
 	
 
