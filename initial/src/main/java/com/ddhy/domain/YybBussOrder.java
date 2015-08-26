@@ -122,6 +122,8 @@ public class YybBussOrder implements Serializable {
 	@Column(name="yyb_starttime")
     @DateTimeFormat(pattern="yyyy-MM-dd-HH:mm:ss")
 	private Date yybStarttime;
+    
+    
 
 	@Column(name="yyb_targetaddress")
 	private String yybTargetaddress;
@@ -143,8 +145,30 @@ public class YybBussOrder implements Serializable {
 
 	@Column(name="yyb_username")
 	private String yybUsername;
+	
+	@Column(name="yyb_origin")
+	private String yybOrigin;
+	
+	@Column(name="yyb_destination")
+	private String yybDestination;
 
-    public YybBussOrder() {
+    public String getYybOrigin() {
+		return yybOrigin;
+	}
+
+	public void setYybOrigin(String yybOrigin) {
+		this.yybOrigin = yybOrigin;
+	}
+
+	public String getYybDestination() {
+		return yybDestination;
+	}
+
+	public void setYybDestination(String yybDestination) {
+		this.yybDestination = yybDestination;
+	}
+
+	public YybBussOrder() {
     }
 
 	public int getYybId() {

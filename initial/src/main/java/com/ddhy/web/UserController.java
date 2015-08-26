@@ -183,6 +183,13 @@ public class UserController {
 		result.setData(reMap);
 		return result;
 	}
+	@RequestMapping("/driver/carlist")
+	public YybResult drvCarList(Integer yybId){
+		YybResult result=new YybResult();
+		List<YybDriverCar> cars=driverCarRepository.findByDriverId(yybId);
+		result.setData(cars);
+		return result;
+	}
 	@RequestMapping("/driver/logout")
 	public YybResult drvLogout(Integer yybId) {
 		YybResult result = new YybResult();
@@ -199,7 +206,7 @@ public class UserController {
 	@RequestMapping("/custom/register")
 	public YybResult cusRegister(YybUserAccount customer,String check,HttpSession session) {
 		YybResult result = new YybResult();
-		String sessionCheck=(String)session.getAttribute(customer.getYybPhone());
+		String sessionCheck=(String)session.getAttribute("check");
 		if(sessionCheck == null)
 		{
 			result.setErrMsg("非法注册，请输入正确手机号获取验证码！");
@@ -238,7 +245,7 @@ public class UserController {
 	@RequestMapping("/driver/updatepswd")
 	public YybResult drvUpdatePassWord(String phone,String password,String check,HttpSession session){
 		YybResult result=new YybResult();
-		String sessionCheck=(String)session.getAttribute(phone);
+		String sessionCheck=(String)session.getAttribute("check");
 		if(sessionCheck==null||!sessionCheck.equals(check)) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
@@ -257,7 +264,7 @@ public class UserController {
 	@RequestMapping("/custom/updatepswd")
 	public YybResult customUpdatePassWord(String phone,String password,String check,HttpSession session){
 		YybResult result=new YybResult();
-		String sessionCheck=(String)session.getAttribute(phone);
+		String sessionCheck=(String)session.getAttribute("check");
 		if(sessionCheck==null||!sessionCheck.equals(check)) {
 			result.setErrMsg("验证码不正确");
 			result.setStatus(1);
@@ -278,7 +285,7 @@ public class UserController {
 	@RequestMapping("/driver/register")
 	public YybResult drvRegister(YybDriverAccount driver,String check,HttpSession session) {
 		YybResult result = new YybResult();
-		String sessionCheck=(String)session.getAttribute(driver.getYybPhone());
+		String sessionCheck=(String)session.getAttribute("check");
 		System.out.println(driver.getYybPhone() +":" + sessionCheck);
 		if(sessionCheck == null)
 		{

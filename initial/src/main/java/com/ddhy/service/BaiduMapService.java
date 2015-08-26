@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.activemq.broker.MutableBrokerFilter;
 import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,61 +26,63 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 
 @Service
 public class BaiduMapService {
-	public static String ak="77b25ae37a0e5d7be217a49dec46f773";
-	public static String geotable_id="116591";
-	public static int coord_type=1;
-	public static String url_geoTableList="http://api.map.baidu.com/geodata/v3/geotable/list";
-	public static String url_addPOI="http://api.map.baidu.com/geodata/v3/poi/create";
-	public static String url_updatePOI="http://api.map.baidu.com/geodata/v3/poi/update";
-	public static String url_calculateDisPOI="";
-	
+	private static ObjectMapper objectMapper = new ObjectMapper();
+
+	public static String ak = "77b25ae37a0e5d7be217a49dec46f773";
+	public static String geotable_id = "116591";
+	public static int coord_type = 1;
+	// 添加检索自己的poi
+	public static String url_geoTableList = "http://api.map.baidu.com/geodata/v3/geotable/list";
+	public static String url_addPOI = "http://api.map.baidu.com/geodata/v3/poi/create";
+	public static String url_updatePOI = "http://api.map.baidu.com/geodata/v3/poi/update";
+
+	// 根据地址获取经纬度
+	private static String url_getAdd = "http://api.map.baidu.com/geocoder/v2/";
+
+	// 根据经纬度获取距离
+	public static String url_distance = "http://api.map.baidu.com/direction/v1/routematrix";
+	public static String output = "json";
+
 	static RestTemplate restTemplate;
 	static {
-		restTemplate=new RestTemplate();
+		restTemplate = new RestTemplate();
 	}
-	public BaiduMapService(){
+
+	public BaiduMapService() {
 	}
-	public void getTest(){
-		UriComponentsBuilder builder=UriComponentsBuilder.fromHttpUrl(url_geoTableList).queryParam("ak", ak);
-		URI uri=builder.build().encode().toUri();
-		String baiduResult=restTemplate.getForObject(uri, String.class);
+
+	public void getTest() {
+		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
+				url_geoTableList).queryParam("ak", ak);
+		URI uri = builder.build().encode().toUri();
+		String baiduResult = restTemplate.getForObject(uri, String.class);
 		System.out.println("ok");
 	}
-	public void updatePOI(String id,double lat,double lng){
-//		UriComponentsBuilder builder=UriComponentsBuilder.fromHttpUrl(url_updatePOI)
-//				.queryParam("ak", ak)
-//				.queryParam("geotable_id", geotable_id)
-//				.queryParam("latitude", lat)
-//				.queryParam("longitude", lng)
-//				.queryParam("coord_type", coord_type)
-//				.queryParam("id", id);
-		MultiValueMap<String, Object> map=new LinkedMultiValueMap<>();
+
+	public void updatePOI(String id, double lat, double lng) {
+		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 		map.add("ak", ak);
 		map.add("geotable_id", geotable_id);
 		map.add("latitude", lat);
 		map.add("longitude", lng);
 		map.add("coord_type", coord_type);
 		map.add("id", id);
-//		String text=builder.build().encode().toUriString();
-	    String result = restTemplate.postForObject(url_updatePOI,map,String.class);
+		String result = restTemplate.postForObject(url_updatePOI, map,
+				String.class);
 	}
-	public String addPOI(double lat,double lng){
-//		UriComponentsBuilder builder=UriComponentsBuilder.fromHttpUrl(url_addPOI)
-//				.queryParam("ak", ak)
-//				.queryParam("geotable_id", geotable_id)
-//				.queryParam("latitude", lat)
-//				.queryParam("longitude", lng)
-//				.queryParam("coord_type", coord_type);
-		MultiValueMap<String, Object> map=new LinkedMultiValueMap<>();
+
+	public String addPOI(double lat, double lng) {
+		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 		map.add("ak", ak);
 		map.add("geotable_id", geotable_id);
 		map.add("latitude", lat);
 		map.add("longitude", lng);
 		map.add("coord_type", coord_type);
-		String baiduResult=restTemplate.postForObject(url_addPOI,map,String.class);
-		ObjectMapper objectMapper=new ObjectMapper();
+		String baiduResult = restTemplate.postForObject(url_addPOI, map,
+				String.class);
 		try {
-			Map<String, Object> re=objectMapper.readValue(baiduResult, Map.class);
+			Map<String, Object> re = objectMapper.readValue(baiduResult,
+					Map.class);
 			return String.valueOf(re.get("id"));
 		} catch (JsonParseException e) {
 			// TODO Auto-generated catch block
@@ -91,11 +94,61 @@ public class BaiduMapService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
-		
-		
-	}
-	
-}
 
+		return null;
+	}
+
+	/**
+	 * get method
+	 * @param origin
+	 *            40.23,123.4
+	 * @param destination
+	 *            12,23,123.4
+	 * @return
+	 */
+	public Double calculateDistance(String origin, String destination) {
+		// must use getMethod
+		UriComponentsBuilder builder = UriComponentsBuilder
+				.fromHttpUrl(url_distance).queryParam("ak", ak)
+				.queryParam("output", output).queryParam("origins", origin)
+				.queryParam("destinations", destination);
+		URI uri = builder.build().encode().toUri();
+
+		String baiduResult = restTemplate.getForObject(uri, String.class);
+		try {
+			Map<String, Object> re = objectMapper.readValue(baiduResult,
+					Map.class);
+			Map<String, Object> result = (Map<String, Object>) re.get("result");
+			List<Map<String, Object>> elements = (List<Map<String, Object>>) result
+					.get("elements");
+			Map<String, Object> disMap=(Map<String, Object>) elements.get(0).get("distance");
+			Integer meters=(Integer) disMap.get("value");
+			return meters/1000+0.0;
+		} catch (Exception e) {
+			return -1.0;
+		}
+	}
+
+	public String calculateLatLng(String addr, String city) {
+		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+		map.add("ak", ak);
+		map.add("output", output);
+		map.add("address", addr);
+		map.add("city", city);
+		String baiduResult = restTemplate.postForObject(url_getAdd, map,
+				String.class);
+		try {
+			Map<String, Object> reMap = objectMapper.readValue(baiduResult,
+					Map.class);
+			Map<String, Object> resultMap = (Map<String, Object>) reMap
+					.get("result");
+			Map<String, Object> locationMap = (Map<String, Object>) resultMap
+					.get("location");
+			return ((double) locationMap.get("lat")) + ","
+					+ ((double) locationMap.get("lng"));
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+}
