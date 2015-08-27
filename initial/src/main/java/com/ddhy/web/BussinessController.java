@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.junit.runner.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import com.ddhy.domain.YybCommonCartype;
 import com.ddhy.domain.YybSysBasicinfo;
 import com.ddhy.repository.*;
 import com.ddhy.service.ActiveSenderService;
+import com.ddhy.service.AliService;
 import com.ddhy.service.BaiduMapService;
 import com.ddhy.service.GrabService;
 import com.ddhy.service.UserServiceIntf;
@@ -38,6 +40,8 @@ import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor
 public class BussinessController {
 	private static Double oilPrice_s;// 油价
 	private static HashMap<Integer, Double> monthNoBusy;
+	@Autowired
+	AliService aliService;
 	@Autowired
 	ActiveSenderService jmsService;
 	@Autowired
@@ -651,6 +655,8 @@ public class BussinessController {
 				if (trade_status.equals("TRADE_FINISHED")
 						|| trade_status.equals("TRADE_SUCCESS")) {
 					Map<String, Object> reMap = new HashMap<>();
+					YybBussOrder order=orderRepository.findByOrderNo(out_trade_no);
+					order.setYybOrderstatus("已支付");
 					reMap.put("orderno", out_trade_no);
 					reMap.put("ordermoney", total_fee);
 					result.setData(reMap);
@@ -666,5 +672,30 @@ public class BussinessController {
 		}
 		return result;
 	}
-
+	@RequestMapping("/buss/getaliorder")
+	public YybResult getAliOrder(YybBussOrder order){
+		YybResult result=new YybResult();
+		YybBussOrder trueOrder=orderRepository.findByOrderNo(order.getYybOrderno());
+		if(trueOrder==null){
+			result.setErrMsg("订单号有误");
+			result.setStatus(1);
+			return result;
+		}
+		String aliOrder=aliService.AliOrder("测试", "测试", trueOrder.getYybCalcmoney().toString(), trueOrder.getYybOrderno());
+		result.setData(aliOrder);
+		return result;
+	}
+	@RequestMapping("/buss/cancelorder")
+	public YybResult cancelOrder(YybBussOrder order){
+		YybResult result=new YybResult();
+		YybBussOrder trueOrder=orderRepository.findByOrderNo(order.getYybOrderno());
+		if(trueOrder==null){
+			result.setErrMsg("订单号有误");
+			result.setStatus(1);
+			return result;
+		}
+		trueOrder.setYybOrderstatus("已取消");
+		orderRepository.save(trueOrder);
+		return result;
+	}
 }

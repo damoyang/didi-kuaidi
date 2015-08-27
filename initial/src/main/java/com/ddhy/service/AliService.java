@@ -7,41 +7,43 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
+import org.springframework.stereotype.Service;
+
 import com.ddhy.util.SignUtils;
 
 //移动支付
+@Service
 public class AliService {
-		// 商户PID
-		public static final String PARTNER = "";
-		// 商户收款账号
-		public static final String SELLER = "";
-		// 商户私钥，pkcs8格式
-		public static final String RSA_PRIVATE = "";
-		// 支付宝公钥
-		public static final String RSA_PUBLIC = "";
-		private static final int SDK_PAY_FLAG = 1;
+	public AliService() {
+	}
+	// 商户PID
+	public static final String PARTNER = "2088711804425039";
+	// 商户收款账号
+	public static final String SELLER = "yybzhifubao@163.com";
+	// 商户私钥，pkcs8格式
+	public static final String RSA_PRIVATE = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALIV07fQwjPYczHCrRjfbbdQgF8sy34OUiG2jS5RrudKOVSkL7fH1TIBOkqCrdx2Rqz8a785F9M0izKbtscqFDjAQeV8D9Ng82OI7BA9K2a5t3+eWNArfV28CVBD5wJSO1IHOaXf6W0p/WB1Uzxj4Q9qASaw/BJwWtxfP45EQ3efAgMBAAECgYAHXo/cU2815gceUAgJt3U62MH3LktddApCCuPcvtSWDaRBtGmlGUfhQdu/qZi4Psy969QpnZs2yj3YYkk2BK/Bd7rhahbCsS1WU+8PG2b4fN8rqO0iAmGGogjCCUJIecKAE4rw8cr0SvTeGNillDY96MIHw77rCekRLcAmQBaZgQJBAOX4xHwv5Zh4qf4id7QOFlb9Wfqz8oXUAjtnjzibvwZBts8DptSx7bE4XP0lc+LyZ7AcODajAgiR+Ty7MjtEpJkCQQDGPbGFhZz8lTPCKTbjKQeHAdZWiunGjhNtDhz7yHTBf9oVMElbpq//1YcVXwR1PoCNWGwLdqFRf1hL7PMLjuj3AkB7TO/8LaoKH9f0/AH2Nf9gUKInusdzXYJ82z98+HRpJF6hi7GtJGDuveuNhsElkxZo5Bh3otp6QdnB6BQ8lscxAkEAkQcHPSBvpdVdhTjzn6IfkKRGcw+zUQAVtB20FHsk936aRBAMStGaRnanGXpm34M3NrCucoB6Kg4YwYr6j8UgJwJATExiSrHKRFmHvSdIFm/5/YZv2yXDibq+cApz79w5AujIrGi1zBSSpabV+pZJP7ipTNR3zS1JnUXJ0grNDyWLDg==";
+	// 支付宝公钥
+	public static final String RSA_PUBLIC = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCnxj/9qwVfgoUh/y2W89L6BkRAFljhNhgPdyPuBV64bfQNN1PjbCzkIM6qRdKBoLPXmKKMiFYnkd6rAoprih3/PrQEB/VsW8OoM8fxn67UDYuyBTqA23MML9q1+ilIZwBC2AQ2UBVOrFXfFl75p6/B5KsiNG9zpgmLCUYuLkxpLQIDAQAB";
 
-		private static final int SDK_CHECK_FLAG = 2;
-		public String AliOrder(){
-			// 订单
-			String orderInfo = getOrderInfo("测试的商品", "该测试商品的详细描述", "0.01");
-
-			// 对订单做RSA 签名
-			String sign = sign(orderInfo);
-			try {
-				// 仅需对sign 做URL编码
-				sign = URLEncoder.encode(sign, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-
-			// 完整的符合支付宝参数规范的订单信息
-			final String payInfo = orderInfo + "&sign=\"" + sign + "\"&"
-					+ getSignType();
-			return payInfo;
+	public String AliOrder(String subject,String body,String price,String orderNum) {
+		// 订单
+		String orderInfo = getOrderInfo(subject, body, price,orderNum);
+		// 对订单做RSA 签名
+		String sign = sign(orderInfo);
+		try {
+			// 仅需对sign 做URL编码
+			sign = URLEncoder.encode(sign, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
 
-	public String getOrderInfo(String subject, String body, String price) {
+		// 完整的符合支付宝参数规范的订单信息
+		final String payInfo = orderInfo + "&sign=\"" + sign + "\"&"
+				+ getSignType();
+		return payInfo;
+	}
+
+	public String getOrderInfo(String subject, String body, String price,String orderNum) {
 
 		// 签约合作者身份ID
 		String orderInfo = "partner=" + "\"" + PARTNER + "\"";
@@ -50,7 +52,7 @@ public class AliService {
 		orderInfo += "&seller_id=" + "\"" + SELLER + "\"";
 
 		// 商户网站唯一订单号
-		orderInfo += "&out_trade_no=" + "\"" + getOutTradeNo() + "\"";
+		orderInfo += "&out_trade_no=" + "\"" + orderNum + "\"";
 
 		// 商品名称
 		orderInfo += "&subject=" + "\"" + subject + "\"";
@@ -92,6 +94,7 @@ public class AliService {
 
 		return orderInfo;
 	}
+
 	/**
 	 * get the out_trade_no for an order. 生成商户订单号，该值在商户端应保持唯一（可自定义格式规范）
 	 * 
@@ -107,6 +110,7 @@ public class AliService {
 		key = key.substring(0, 15);
 		return key;
 	}
+
 	/**
 	 * get the sign type we use. 获取签名方式
 	 * 
@@ -114,6 +118,7 @@ public class AliService {
 	public String getSignType() {
 		return "sign_type=\"RSA\"";
 	}
+
 	/**
 	 * sign the order info. 对订单信息进行签名
 	 * 
