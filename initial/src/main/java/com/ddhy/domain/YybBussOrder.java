@@ -459,7 +459,7 @@ public class YybBussOrder implements Serializable {
 		this.yybUsername = yybUsername;
 	}
 	public void init(){
-		yybOrderstatus="未确认";
+		yybOrderstatus="未支付";
 		yybOrdertime=new Date();
 		yybOrderno=UUIDGenerator.getDingDanBH();
 		Random random=new Random();

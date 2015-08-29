@@ -30,7 +30,7 @@ public class AlipayConfig {
 	// 收款支付宝账号
 	public static String seller_email = "yybzhifubao@163.com";
 	// 商户的私钥
-	public static String key = "41whbtb126ihn4an93aykiolos5wvkbu";
+	public static String key = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBALCGDx6p0yHBNycAB36Rwl3NkgQv5+GybRUOsKyse3nBYT8WT34iMyZNt6ZCuR6GtqTMJ51D2H7y6i8sSjM4iwRyRQavRJdrgFH/zzNP9VGL2hPuaacC6GQLGVLuNNpmMWXHM/4vK+lKpvdfKZI99kjhom3BdCKnNZc4CT4QTUrJAgMBAAECgYEAlmhTv7vR8yPvu2JSAG1v4H9FWB39hRiDy3pt3WNF/lNgaeG3r/CyBoQX5ClcFH+SZk6xvlVNxbVzBujE/GnEQITSXIHwVgAw2Mma3r7wnwD6fImy7OTS2LOPObI3079hSvJbe4l75h69dvTbl7+dQtIgkauUv5TSoHpIhbgEXEUCQQDpIUeczWQrRmaBwML50hLmZg5jIF/IEgWYb3VNyLXyJZCNnO9vEWVhM077ics8h3artaKGcMMON0Y6WJ+XjtGbAkEAwdcxnPU1YoOWYnuHVmbiRYV9mJoYPri6ZETKkliFaKYr3QhhiVX2rjosv/FzeLJ7IJiqZ7uGd24D1vqWy3l9awJAb6IF/qnDa418jGlXc/UKI9V+0iywcMdgcov8qdCQf3FJdOZPKOo1l4PQMFbdQRDE3JhPSP06CdaiBFJnqVU0PQJBAKd3b1mXT6Po44f6CRbQlDRT/ApXNxMZLY9rD0gYSkn7JnIzx3CLYC9t+zNpOsXQDShAPRiZnraXyaF1pcntEDkCQBxE0tuvXnt8CcU9u2iCBKiDqu2yTp3z/V8ixdSDskyokzC7Jf2GHte4lSEZIuv3QmR8PmSTTRu/7RMtyOjFhYM=";
 
 	//↑↑↑↑↑↑↑↑↑↑请在这里配置您的基本信息↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 	

@@ -2,12 +2,14 @@ package com.ddhy.web;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ddhy.domain.YybDriverCar;
 import com.ddhy.domain.YybResult;
 import com.ddhy.domain.YybDriverAccount;
 import com.ddhy.domain.YybDriverPostion;
@@ -26,6 +28,8 @@ public class LocationController {
 	CustomerPositionRepository customerPositionRepository;
 	@Autowired
 	DriverRepository driverRepository;
+	@Autowired
+	DriverCarRepository carRepository;
 	@Autowired
 	BaiduMapService baiduMapService;
 	@RequestMapping("/driver/updatepos")
@@ -46,8 +50,16 @@ public class LocationController {
 				result.setErrMsg("没有此用户");
 				result.setStatus(1);
 				return result;
-			}else if(driver.getYybBaiduid()==null){
-				String baiduid=baiduMapService.addPOI(yybDriverPostion.getYybLat(), yybDriverPostion.getYybLong());
+			}
+			List<YybDriverCar> cars=carRepository.findByDriverId(yybDriverPostion.getYybDriverid());
+			if(cars==null||cars.size()==0){
+				result.setErrMsg("此用户没有添加车辆");
+				result.setStatus(1);
+				return result;
+			}
+			YybDriverCar car=cars.get(0);
+			if(driver.getYybBaiduid()==null){
+				String baiduid=baiduMapService.addPOI(yybDriverPostion.getYybLat(), yybDriverPostion.getYybLong(),car.getYybCarlicense());
 				driver.setYybBaiduid(baiduid);
 				driverRepository.save(driver);
 			}else{

@@ -28,8 +28,8 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 public class BaiduMapService {
 	private static ObjectMapper objectMapper = new ObjectMapper();
 
-	public static String ak = "77b25ae37a0e5d7be217a49dec46f773";
-	public static String geotable_id = "116591";
+	public static String ak = "DC6acaecdf0fc9e0b15b582b3c23bfb0";
+	public static String geotable_id = "115314";
 	public static int coord_type = 1;
 	// 添加检索自己的poi
 	public static String url_geoTableList = "http://api.map.baidu.com/geodata/v3/geotable/list";
@@ -71,13 +71,14 @@ public class BaiduMapService {
 				String.class);
 	}
 
-	public String addPOI(double lat, double lng) {
+	public String addPOI(double lat, double lng,String brand) {
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 		map.add("ak", ak);
 		map.add("geotable_id", geotable_id);
 		map.add("latitude", lat);
 		map.add("longitude", lng);
 		map.add("coord_type", coord_type);
+		map.add("title", brand);
 		String baiduResult = restTemplate.postForObject(url_addPOI, map,
 				String.class);
 		try {

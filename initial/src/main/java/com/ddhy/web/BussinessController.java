@@ -162,33 +162,33 @@ public class BussinessController {
 	 * 标志下单状态为已下单(即为－－已支付)
 	 * 
 	 */
-	@RequestMapping("/busi/orderconfirm")
-	YybResult orderConfirm(String yybOrderno) {
-		YybResult result = new YybResult();
-		YybBussOrder trueOrder = orderRepository.findByOrderNo(yybOrderno);
-		if (trueOrder == null) {
-			result.setErrMsg("订单号不正确");
-			result.setStatus(1);
-			return result;
-		} else if (!trueOrder.getYybOrderstatus().equals("未确认")) {
-			result.setErrMsg("订单状态异常");
-			result.setStatus(1);
-			return result;
-		}
-		trueOrder.setYybOrderstatus("已下单");
-		trueOrder.setYybOrdertime(new Timestamp(System.currentTimeMillis()));
-		orderRepository.save(trueOrder);
-		// TODO baiduMap
-		/*
-		 * if(jmsService!=null) { jmsService.pushToDriver("22", trueOrder); }
-		 */
-		Map<String, Object> reMap = new HashMap<>();
-		reMap.put("orderno", trueOrder.getYybOrderno());
-		reMap.put("orderstatus", trueOrder.getYybOrderstatus());
-		reMap.put("ordertime", trueOrder.getYybOrdertime());
-		result.setData(reMap);
-		return result;
-	}
+//	@RequestMapping("/busi/orderconfirm")
+//	YybResult orderConfirm(String yybOrderno) {
+//		YybResult result = new YybResult();
+//		YybBussOrder trueOrder = orderRepository.findByOrderNo(yybOrderno);
+//		if (trueOrder == null) {
+//			result.setErrMsg("订单号不正确");
+//			result.setStatus(1);
+//			return result;
+//		} else if (!trueOrder.getYybOrderstatus().equals("未支付")) {
+//			result.setErrMsg("订单状态异常");
+//			result.setStatus(1);
+//			return result;
+//		}
+//		trueOrder.setYybOrderstatus("已下单");
+//		trueOrder.setYybOrdertime(new Timestamp(System.currentTimeMillis()));
+//		orderRepository.save(trueOrder);
+//		// TODO baiduMap
+//		/*
+//		 * if(jmsService!=null) { jmsService.pushToDriver("22", trueOrder); }
+//		 */
+//		Map<String, Object> reMap = new HashMap<>();
+//		reMap.put("orderno", trueOrder.getYybOrderno());
+//		reMap.put("orderstatus", trueOrder.getYybOrderstatus());
+//		reMap.put("ordertime", trueOrder.getYybOrdertime());
+//		result.setData(reMap);
+//		return result;
+//	}
 
 	/**
 	 * 
@@ -215,6 +215,7 @@ public class BussinessController {
 			result.setErrMsg("参数错误，请检查［起始地点｜车辆类型｜货物类型｜货物重量｜货物体积］");
 			return result;
 		}
+		//未支付
 		order.init();
 		// 计算地理位置信息 百度地图支持 城市 详细地址 二维检索
 		String origin = baiduMapService.calculateLatLng(order.getYybGoodsaddress(), order.getYybGoodscity());
@@ -350,7 +351,7 @@ public class BussinessController {
 	YybResult orderlist() {
 		YybResult result = new YybResult();
 		// TODO more choise
-		List<YybBussOrder> lists = orderRepository.findByOrderStatus("已下单");
+		List<YybBussOrder> lists = orderRepository.findByOrderStatus("已支付");
 		// TODO more
 		result.setData(lists);
 		return result;
@@ -368,8 +369,8 @@ public class BussinessController {
 		// TODO more choise
 		Pageable pageable = buildPageRequest(page, rows, "desc", "yybOrdertime");
 		List<YybBussOrder> lists = orderRepository.findByOrderStatusByPage(
-				"已下单", pageable);
-		int count = orderRepository.countSendOrder("已下单");
+				"已支付", pageable);
+		int count = orderRepository.countSendOrder("已支付");
 		// TODO more
 		Map<String, Object> reMap = new HashMap<>();
 		reMap.put("orderlist", lists);
@@ -592,6 +593,8 @@ public class BussinessController {
 				if (trade_status.equals("TRADE_FINISHED")
 						|| trade_status.equals("TRADE_SUCCESS")) {
 					Map<String, Object> reMap = new HashMap<>();
+					YybBussOrder order =orderRepository.findByOrderNo(out_trade_no);
+					order.setYybOrderstatus("已支付");
 					reMap.put("orderno", out_trade_no);
 					reMap.put("ordermoney", total_fee);
 					result.setData(reMap);
@@ -608,12 +611,12 @@ public class BussinessController {
 		}
 		return result;
 	}
-
+	
 	/**
 	 * 
 	 * 支付宝支付完成 支付宝服务器做通知接口
 	 */
-	@RequestMapping("/buss/alipaynotifyurl")
+	@RequestMapping(value="/buss/alipaynotifyurl",method=RequestMethod.POST)
 	public YybResult alipayNotifyUrl(HttpServletRequest request)
 			throws UnsupportedEncodingException {
 		YybResult result = new YybResult();
@@ -653,6 +656,8 @@ public class BussinessController {
 					Map<String, Object> reMap = new HashMap<>();
 					YybBussOrder order=orderRepository.findByOrderNo(out_trade_no);
 					order.setYybOrderstatus("已支付");
+					order.setYybPaytime(new Date());
+					orderRepository.save(order);
 					reMap.put("orderno", out_trade_no);
 					reMap.put("ordermoney", total_fee);
 					result.setData(reMap);
@@ -677,7 +682,7 @@ public class BussinessController {
 			result.setStatus(1);
 			return result;
 		}
-		String aliOrder=aliService.AliOrder("测试", "测试", trueOrder.getYybCalcmoney().toString(), trueOrder.getYybOrderno());
+		String aliOrder=aliService.AliOrder("测试", "测试", "0.01", trueOrder.getYybOrderno());
 		result.setData(aliOrder);
 		return result;
 	}

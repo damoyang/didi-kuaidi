@@ -21,7 +21,11 @@ public class AliService {
 	// 商户收款账号
 	public static final String SELLER = "yybzhifubao@163.com";
 	// 商户私钥，pkcs8格式
-	public static final String RSA_PRIVATE = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALIV07fQwjPYczHCrRjfbbdQgF8sy34OUiG2jS5RrudKOVSkL7fH1TIBOkqCrdx2Rqz8a785F9M0izKbtscqFDjAQeV8D9Ng82OI7BA9K2a5t3+eWNArfV28CVBD5wJSO1IHOaXf6W0p/WB1Uzxj4Q9qASaw/BJwWtxfP45EQ3efAgMBAAECgYAHXo/cU2815gceUAgJt3U62MH3LktddApCCuPcvtSWDaRBtGmlGUfhQdu/qZi4Psy969QpnZs2yj3YYkk2BK/Bd7rhahbCsS1WU+8PG2b4fN8rqO0iAmGGogjCCUJIecKAE4rw8cr0SvTeGNillDY96MIHw77rCekRLcAmQBaZgQJBAOX4xHwv5Zh4qf4id7QOFlb9Wfqz8oXUAjtnjzibvwZBts8DptSx7bE4XP0lc+LyZ7AcODajAgiR+Ty7MjtEpJkCQQDGPbGFhZz8lTPCKTbjKQeHAdZWiunGjhNtDhz7yHTBf9oVMElbpq//1YcVXwR1PoCNWGwLdqFRf1hL7PMLjuj3AkB7TO/8LaoKH9f0/AH2Nf9gUKInusdzXYJ82z98+HRpJF6hi7GtJGDuveuNhsElkxZo5Bh3otp6QdnB6BQ8lscxAkEAkQcHPSBvpdVdhTjzn6IfkKRGcw+zUQAVtB20FHsk936aRBAMStGaRnanGXpm34M3NrCucoB6Kg4YwYr6j8UgJwJATExiSrHKRFmHvSdIFm/5/YZv2yXDibq+cApz79w5AujIrGi1zBSSpabV+pZJP7ipTNR3zS1JnUXJ0grNDyWLDg==";
+	// public static final String RSA_PRIVATE = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALIV07fQwjPYczHCrRjfbbdQgF8sy34OUiG2jS5RrudKOVSkL7fH1TIBOkqCrdx2Rqz8a785F9M0izKbtscqFDjAQeV8D9Ng82OI7BA9K2a5t3+eWNArfV28CVBD5wJSO1IHOaXf6W0p/WB1Uzxj4Q9qASaw/BJwWtxfP45EQ3efAgMBAAECgYAHXo/cU2815gceUAgJt3U62MH3LktddApCCuPcvtSWDaRBtGmlGUfhQdu/qZi4Psy969QpnZs2yj3YYkk2BK/Bd7rhahbCsS1WU+8PG2b4fN8rqO0iAmGGogjCCUJIecKAE4rw8cr0SvTeGNillDY96MIHw77rCekRLcAmQBaZgQJBAOX4xHwv5Zh4qf4id7QOFlb9Wfqz8oXUAjtnjzibvwZBts8DptSx7bE4XP0lc+LyZ7AcODajAgiR+Ty7MjtEpJkCQQDGPbGFhZz8lTPCKTbjKQeHAdZWiunGjhNtDhz7yHTBf9oVMElbpq//1YcVXwR1PoCNWGwLdqFRf1hL7PMLjuj3AkB7TO/8LaoKH9f0/AH2Nf9gUKInusdzXYJ82z98+HRpJF6hi7GtJGDuveuNhsElkxZo5Bh3otp6QdnB6BQ8lscxAkEAkQcHPSBvpdVdhTjzn6IfkKRGcw+zUQAVtB20FHsk936aRBAMStGaRnanGXpm34M3NrCucoB6Kg4YwYr6j8UgJwJATExiSrHKRFmHvSdIFm/5/YZv2yXDibq+cApz79w5AujIrGi1zBSSpabV+pZJP7ipTNR3zS1JnUXJ0grNDyWLDg==";
+	//siyao
+	public static final String RSA_PRIVATE = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBALCGDx6p0yHBNycAB36Rwl3NkgQv5+GybRUOsKyse3nBYT8WT34iMyZNt6ZCuR6GtqTMJ51D2H7y6i8sSjM4iwRyRQavRJdrgFH/zzNP9VGL2hPuaacC6GQLGVLuNNpmMWXHM/4vK+lKpvdfKZI99kjhom3BdCKnNZc4CT4QTUrJAgMBAAECgYEAlmhTv7vR8yPvu2JSAG1v4H9FWB39hRiDy3pt3WNF/lNgaeG3r/CyBoQX5ClcFH+SZk6xvlVNxbVzBujE/GnEQITSXIHwVgAw2Mma3r7wnwD6fImy7OTS2LOPObI3079hSvJbe4l75h69dvTbl7+dQtIgkauUv5TSoHpIhbgEXEUCQQDpIUeczWQrRmaBwML50hLmZg5jIF/IEgWYb3VNyLXyJZCNnO9vEWVhM077ics8h3artaKGcMMON0Y6WJ+XjtGbAkEAwdcxnPU1YoOWYnuHVmbiRYV9mJoYPri6ZETKkliFaKYr3QhhiVX2rjosv/FzeLJ7IJiqZ7uGd24D1vqWy3l9awJAb6IF/qnDa418jGlXc/UKI9V+0iywcMdgcov8qdCQf3FJdOZPKOo1l4PQMFbdQRDE3JhPSP06CdaiBFJnqVU0PQJBAKd3b1mXT6Po44f6CRbQlDRT/ApXNxMZLY9rD0gYSkn7JnIzx3CLYC9t+zNpOsXQDShAPRiZnraXyaF1pcntEDkCQBxE0tuvXnt8CcU9u2iCBKiDqu2yTp3z/V8ixdSDskyokzC7Jf2GHte4lSEZIuv3QmR8PmSTTRu/7RMtyOjFhYM=";
+
+	
 	// 支付宝公钥
 	public static final String RSA_PUBLIC = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCnxj/9qwVfgoUh/y2W89L6BkRAFljhNhgPdyPuBV64bfQNN1PjbCzkIM6qRdKBoLPXmKKMiFYnkd6rAoprih3/PrQEB/VsW8OoM8fxn67UDYuyBTqA23MML9q1+ilIZwBC2AQ2UBVOrFXfFl75p6/B5KsiNG9zpgmLCUYuLkxpLQIDAQAB";
 
@@ -36,7 +40,6 @@ public class AliService {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-
 		// 完整的符合支付宝参数规范的订单信息
 		final String payInfo = orderInfo + "&sign=\"" + sign + "\"&"
 				+ getSignType();
@@ -64,7 +67,7 @@ public class AliService {
 		orderInfo += "&total_fee=" + "\"" + price + "\"";
 
 		// 服务器异步通知页面路径
-		orderInfo += "&notify_url=" + "\"" + "http://notify.msp.hk/notify.htm"
+		orderInfo += "&notify_url=" + "\"" + "http://112.126.83.199/didi-1/buss/alipaynotifyurl"
 				+ "\"";
 
 		// 服务接口名称， 固定值
