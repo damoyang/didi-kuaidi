@@ -2,12 +2,16 @@ package com.ddhy.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 
 import com.ddhy.domain.YybResult;
 import com.ddhy.domain.YybSysBasicinfo;
 import com.ddhy.repository.*;
+import com.wordnik.swagger.annotations.Api;
+@Api(description = "system info", produces = "application/json", value = "sysinfo")
+@RequestMapping(method=RequestMethod.GET)
 @RestController
 public class SystemInfoController {
 	String spliter=",";

@@ -11,13 +11,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.runner.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ddhy.domain.YybResult;
@@ -32,10 +32,10 @@ import com.ddhy.service.BaiduMapService;
 import com.ddhy.service.GrabService;
 import com.ddhy.service.UserServiceIntf;
 import com.ddhy.util.AlipayNotify;
-import com.ddhy.util.HttpUrlRequestUtil;
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
+import com.wordnik.swagger.annotations.Api;
 
-
+@Api(description = "orderlist and pay info", produces = "application/json", value = "business")
+@RequestMapping(method=RequestMethod.GET)
 @RestController
 public class BussinessController {
 	private static Double oilPrice_s;// 油价
@@ -58,10 +58,7 @@ public class BussinessController {
 	SysBasicinfoRepository sysBasicinfoRepository;
 	@Autowired
 	CommonCartypeRepository commonCartypeRepository;
-
-	/**
-	 * TODO baidu search TODO activeMQ TODO
-	 */
+	
 	public Double getOilPrice() {
 		List<YybSysBasicinfo> rBasicinfos = sysBasicinfoRepository
 				.findByName("油价");
@@ -133,7 +130,6 @@ public class BussinessController {
 	/**
 	 * 创建分页请求.
 	 */
-	// TODO 构造分页的配置 包括排序的方式
 	private PageRequest buildPageRequest(int pageNumber, int pagzSize,
 			String sortType, String sortColumn) {
 		Sort sort = null;

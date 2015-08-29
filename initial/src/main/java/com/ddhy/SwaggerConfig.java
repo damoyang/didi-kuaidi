@@ -26,8 +26,8 @@ public class SwaggerConfig {
         return new SwaggerSpringMvcPlugin(this.springSwaggerConfig)
                 //This info will be used in Swagger. See realisation of ApiInfo for more details.
                 .apiInfo(new ApiInfo(
-                        "SmartMe education API",
-                        "This app is for education, training purpose. It represents model of landlords and apartments for rent",
+                        "滴滴货运-1.0 API",
+                        "本Api主要用于服务器接口文档说明和前端测试接口用途。",
                         null,
                         null,
                         null,

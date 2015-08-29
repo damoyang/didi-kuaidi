@@ -13,7 +13,8 @@ import com.ddhy.service.*;
 import com.ddhy.util.*;
 import com.ddhy.repository.*;
 import com.wordnik.swagger.annotations.*;
-@Api(description = "Operations with Landlords", produces = "application/json", value = "user")
+@Api(description = "user info", produces = "application/json", value = "user")
+@RequestMapping(method=RequestMethod.GET)
 @RestController
 public class UserController {
 	private static Map<String, String> checkMap=new HashMap<String, String>();

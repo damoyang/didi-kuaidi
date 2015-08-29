@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ddhy.domain.YybResult;
@@ -14,7 +15,9 @@ import com.ddhy.domain.YybUserPosition;
 import com.ddhy.repository.*;
 import com.ddhy.service.BaiduMapService;
 import com.mysql.jdbc.Driver;
-
+import com.wordnik.swagger.annotations.Api;
+@Api(description = "location info", produces = "application/json", value = "location")
+@RequestMapping(method=RequestMethod.GET)
 @RestController
 public class LocationController {
 	@Autowired
