@@ -17,7 +17,8 @@ public class AliService {
 	public AliService() {
 	}
 	// 商户PID
-	public static final String PARTNER = "2088711804425039";
+//	public static final String PARTNER = "2088711804425039";
+	public static final String PARTNER = "";
 	// 商户收款账号
 	public static final String SELLER = "yybzhifubao@163.com";
 	// 商户私钥，pkcs8格式
