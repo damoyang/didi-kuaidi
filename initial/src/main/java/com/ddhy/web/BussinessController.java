@@ -162,33 +162,33 @@ public class BussinessController {
 	 * 标志下单状态为已下单(即为－－已支付)
 	 * 
 	 */
-//	@RequestMapping("/busi/orderconfirm")
-//	YybResult orderConfirm(String yybOrderno) {
-//		YybResult result = new YybResult();
-//		YybBussOrder trueOrder = orderRepository.findByOrderNo(yybOrderno);
-//		if (trueOrder == null) {
-//			result.setErrMsg("订单号不正确");
-//			result.setStatus(1);
-//			return result;
-//		} else if (!trueOrder.getYybOrderstatus().equals("未支付")) {
-//			result.setErrMsg("订单状态异常");
-//			result.setStatus(1);
-//			return result;
-//		}
-//		trueOrder.setYybOrderstatus("已下单");
-//		trueOrder.setYybOrdertime(new Timestamp(System.currentTimeMillis()));
-//		orderRepository.save(trueOrder);
-//		// TODO baiduMap
-//		/*
-//		 * if(jmsService!=null) { jmsService.pushToDriver("22", trueOrder); }
-//		 */
-//		Map<String, Object> reMap = new HashMap<>();
-//		reMap.put("orderno", trueOrder.getYybOrderno());
-//		reMap.put("orderstatus", trueOrder.getYybOrderstatus());
-//		reMap.put("ordertime", trueOrder.getYybOrdertime());
-//		result.setData(reMap);
-//		return result;
-//	}
+	@RequestMapping("/busi/orderconfirm")
+	YybResult orderConfirm(String yybOrderno) {
+		YybResult result = new YybResult();
+		YybBussOrder trueOrder = orderRepository.findByOrderNo(yybOrderno);
+		if (trueOrder == null) {
+			result.setErrMsg("订单号不正确");
+			result.setStatus(1);
+			return result;
+		} else if (!trueOrder.getYybOrderstatus().equals("未支付")) {
+			result.setErrMsg("订单状态异常");
+			result.setStatus(1);
+			return result;
+		}
+		trueOrder.setYybOrderstatus("已下单");
+		trueOrder.setYybOrdertime(new Timestamp(System.currentTimeMillis()));
+		orderRepository.save(trueOrder);
+		// TODO baiduMap
+		/*
+		 * if(jmsService!=null) { jmsService.pushToDriver("22", trueOrder); }
+		 */
+		Map<String, Object> reMap = new HashMap<>();
+		reMap.put("orderno", trueOrder.getYybOrderno());
+		reMap.put("orderstatus", trueOrder.getYybOrderstatus());
+		reMap.put("ordertime", trueOrder.getYybOrdertime());
+		result.setData(reMap);
+		return result;
+	}
 
 	/**
 	 * 
@@ -275,7 +275,7 @@ public class BussinessController {
 			// TODO
 
 		}
-		oilPrice = oilPricePre * mileage * carOil;
+		oilPrice = oilPricePre * mileage * (carOil/100);
 		drierPrice = oilPrice; // 司机费用 ＝ 油费
 		roadPrice = feescale * mileage;// 高速费
 		if (monthNoBusy == null) {
